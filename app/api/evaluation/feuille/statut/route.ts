@@ -19,12 +19,10 @@ export async function POST() {
       return createResponse({ message: "Aucune donnée trouvée" }, 404);
     }
 
-    // Cast results to simplify TypeScript's union
-    const results = (await Promise.allSettled(
-      evalSheets.map((sheet) => processEvalSheet(sheet, today))
-    )) as PromiseSettledResult<
-      Document<unknown, {}, IEvalSheet> & IEvalSheet
-    >[];
+    const promises: Promise<Document<unknown, {}, IEvalSheet> & IEvalSheet>[] =
+      evalSheets.map((sheet) => processEvalSheet(sheet, today));
+
+    const results = await Promise.allSettled(promises);
 
     results.forEach((result, index) => {
       if (result.status === "rejected") {
