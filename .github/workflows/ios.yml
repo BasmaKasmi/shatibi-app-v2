@@ -1,4 +1,4 @@
-name: Build iOS App
+name: Build iOS App (Simulator Only)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 jobs:
-  build-ios:
+  build-ios-simulator:
     runs-on: macos-latest
 
     steps:
@@ -61,18 +61,21 @@ jobs:
       - name: Build iOS app for Simulator
         run: |
           cd ios/App
+          # Build for iOS Simulator only, bypassing code signing
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
-            -destination "generic/platform=iOS"
+            -sdk iphonesimulator \
+            CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
 
-      - name: Create IPA package (simulator build)
+      - name: Collect Simulator build artifacts
         run: |
           cd ios/App
-          mkdir -p ipa-output
-          echo "iOS simulator build completed successfully" > ipa-output/build-success.txt
-          echo "Shatibi iOS App built on $(date)" >> ipa-output/build-info.txt
+          mkdir -p simulator-build
+          cp -R build/ simulator-build/
+          echo "Simulator build completed successfully" > simulator-build/build-success.txt
+          echo "Shatibi iOS App built on $(date)" >> simulator-build/build-info.txt
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: shatibi-ios-build
-          path: ios/App/ipa-output/
+          name: shatibi-ios-simulator-build
+          path: ios/App/simulator-build/
