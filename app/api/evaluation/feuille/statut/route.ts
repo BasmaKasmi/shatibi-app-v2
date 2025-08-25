@@ -1,11 +1,23 @@
 import evalSheet, { IEvalSheet } from "@/models/evalSheet";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import sendMails from "@/utils/sendMails";
 import { startOfDay } from "date-fns";
 import dayjs from "dayjs";
 
 const isMailjetConfigured =
   !!process.env.MAILJET_API_KEY && !!process.env.MAILJET_SECRET_KEY;
+
+type PlainEvalSheet = {
+  _id: string;
+  modId: string;
+  subject: string;
+  passageDate: Date;
+  sendDate?: Date;
+  statut: string;
+  scaleId: string;
+  groupId: string;
+  teacherId?: string[];
+};
 
 export async function POST() {
   const today = startOfDay(new Date());
@@ -19,8 +31,9 @@ export async function POST() {
       return createResponse({ message: "Aucune donnée trouvée" }, 404);
     }
 
-    const promises: Promise<Document<unknown, {}, IEvalSheet> & IEvalSheet>[] =
-      evalSheets.map((sheet) => processEvalSheet(sheet, today));
+    const promises: Promise<PlainEvalSheet>[] = evalSheets.map((sheet) =>
+      processEvalSheet(sheet, today)
+    );
 
     const results = await Promise.allSettled(promises);
 
@@ -46,9 +59,11 @@ export async function POST() {
 async function processEvalSheet(
   sheet: Document<unknown, {}, IEvalSheet> & IEvalSheet,
   today: Date
-): Promise<Document<unknown, {}, IEvalSheet> & IEvalSheet> {
+): Promise<PlainEvalSheet> {
   const passageDate = startOfDay(new Date(sheet.passageDate));
-  const sendDate = sheet.sendDate ? startOfDay(new Date(sheet.sendDate)) : null;
+  const sendDate = sheet.sendDate
+    ? startOfDay(new Date(sheet.sendDate))
+    : undefined;
 
   if (sendDate && sendDate <= today) {
     if (isMailjetConfigured) {
@@ -70,7 +85,21 @@ async function processEvalSheet(
     sheet.statut = "À saisir";
   }
 
-  return sheet.save();
+  const saved = await sheet.save();
+
+  const id = saved._id as Types.ObjectId;
+
+  return {
+    _id: id.toString(),
+    modId: saved.modId.toString(),
+    subject: saved.subject,
+    passageDate: saved.passageDate,
+    sendDate: saved.sendDate,
+    statut: saved.statut,
+    scaleId: saved.scaleId.toString(),
+    groupId: saved.groupId.toString(),
+    teacherId: saved.teacherId,
+  };
 }
 
 async function sendNotification(
