@@ -61,7 +61,7 @@ jobs:
           cd ios/App
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1"
+            -destination "generic/platform=iOS"
 
       - name: Create IPA package
         run: |
