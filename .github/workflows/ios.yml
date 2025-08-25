@@ -8,64 +8,64 @@ on:
 jobs:
   build-ios:
     runs-on: macos-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "18"
-        cache: "pnpm"
-    
-    - name: Install dependencies
-      run: pnpm install
-    
-    - name: Build Next.js app
-      run: pnpm run build
-    
-    - name: Create build-mobile directory for Capacitor
-      run: |
-        mkdir -p build-mobile
-        echo '<!DOCTYPE html>
-        <html>
-        <head>
-          <title>Shatibi</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body>
-          <div id="root">
-            <h1>Shatibi App</h1>
-            <p>Application mobile Shatibi</p>
-          </div>
-        </body>
-        </html>' > build-mobile/index.html
-    
-    - name: Setup Capacitor
-      run: |
-        npx cap add ios
-        npx cap sync ios
-    
-    - name: Build iOS app (simplified)
-      run: |
-        cd ios/App
-        xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -destination 'platform=iOS Simulator,name=iPhone 15'
-    
-    - name: Create IPA package
-      run: |
-        cd ios/App
-        mkdir -p ipa-output
-        echo "iOS build completed successfully" > ipa-output/build-success.txt
-        echo "Shatibi iOS App built on $(date)" >> ipa-output/build-info.txt
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: shatibi-ios-build
-        path: ios/App/ipa-output/
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Next.js app
+        run: pnpm run build
+
+      - name: Create build-mobile directory for Capacitor
+        run: |
+          mkdir -p build-mobile
+          echo '<!DOCTYPE html>
+          <html>
+          <head>
+            <title>Shatibi</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body>
+            <div id="root">
+              <h1>Shatibi App</h1>
+              <p>Application mobile Shatibi</p>
+            </div>
+          </body>
+          </html>' > build-mobile/index.html
+
+      - name: Setup Capacitor
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Build iOS app (simplified)
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -destination 'platform=iOS Simulator,name=iPhone 15'
+
+      - name: Create IPA package
+        run: |
+          cd ios/App
+          mkdir -p ipa-output
+          echo "iOS build completed successfully" > ipa-output/build-success.txt
+          echo "Shatibi iOS App built on $(date)" >> ipa-output/build-info.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: shatibi-ios-build
+          path: ios/App/ipa-output/
