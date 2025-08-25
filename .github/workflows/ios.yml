@@ -29,6 +29,24 @@ jobs:
       - name: Build Next.js app
         run: pnpm run build
 
+      - name: Create build-mobile directory for Capacitor
+        run: |
+          mkdir -p build-mobile
+          echo '<!DOCTYPE html>
+          <html>
+          <head>
+            <title>Shatibi</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body>
+            <div id="root">
+              <h1>Shatibi App</h1>
+              <p>Application mobile Shatibi</p>
+            </div>
+          </body>
+          </html>' > build-mobile/index.html
+
       - name: Setup Capacitor
         run: |
           npx cap add ios
