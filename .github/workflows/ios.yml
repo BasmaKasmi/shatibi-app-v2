@@ -1,42 +1,47 @@
 name: Build iOS App
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   build-ios:
     runs-on: macos-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Build Next.js app
-      run: npm run build
-    
-    - name: Setup Capacitor
-      run: |
-        npx cap add ios
-        npx cap sync ios
-    
-    - name: Build iOS app
-      run: |
-        cd ios/App
-        xcodebuild -workspace App.xcworkspace -scheme App -configuration Release archive -archivePath App.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
-        xcodebuild -exportArchive -archivePath App.xcarchive -exportPath . -exportOptionsPlist ../../exportOptions.plist
-    
-    - name: Upload IPA
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-app
-        path: ios/App/*.ipa
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Next.js app
+        run: pnpm run build
+
+      - name: Setup Capacitor
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Build iOS app
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release archive -archivePath App.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          xcodebuild -exportArchive -archivePath App.xcarchive -exportPath . -exportOptionsPlist ../../exportOptions.plist
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app
+          path: ios/App/*.ipa
