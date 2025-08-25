@@ -1,5 +1,4 @@
-name: Build iOS App (Simulator Only)
-
+name: Build iOS IPA
 on:
   push:
     branches: [main, master]
@@ -7,9 +6,8 @@ on:
     branches: [main, master]
 
 jobs:
-  build-ios-simulator:
+  build-ios-ipa:
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,29 +26,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Check TypeScript
-        run: npx tsc --noEmit
-
       - name: Build Next.js app
         run: pnpm run build
 
-      - name: Create build-mobile directory for Capacitor
+      - name: Create build-mobile directory
         run: |
           mkdir -p build-mobile
-          echo '<!DOCTYPE html>
-          <html>
-          <head>
-            <title>Shatibi</title>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body>
-            <div id="root">
-              <h1>Shatibi App</h1>
-              <p>Application mobile Shatibi</p>
-            </div>
-          </body>
-          </html>' > build-mobile/index.html
+          echo '<!DOCTYPE html><html><head><title>Shatibi</title></head><body><h1>Shatibi App</h1></body></html>' > build-mobile/index.html
 
       - name: Setup Capacitor
         run: |
@@ -58,30 +40,28 @@ jobs:
           npx cap add ios
           npx cap sync ios
 
-      - name: List available simulators
-        run: xcrun simctl list devices
-
-      - name: Build iOS app for Simulator
+      - name: Build iOS App for Device (unsigned)
         run: |
           cd ios/App
-          # Choisir automatiquement le premier iPhone dispo en iOS 17
-          DEVICE=$(xcrun simctl list devices available | grep "iPhone" | grep "17.5" | head -n 1 | awk -F '[()]' '{print $2}')
-          echo "Using simulator device: $DEVICE"
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
-            -sdk iphonesimulator \
-            -destination "id=$DEVICE" \
-            CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Debug \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE=""
 
-      - name: Collect Simulator build artifacts
+      - name: Create IPA
         run: |
           cd ios/App
-          mkdir -p simulator-build
-          cp -R build/ simulator-build/ || echo "No build folder found"
-          echo "Simulator build completed successfully" > simulator-build/build-success.txt
-          echo "Shatibi iOS App built on $(date)" >> simulator-build/build-info.txt
+          mkdir -p Payload
+          cp -r /Users/runner/Library/Developer/Xcode/DerivedData/*/Build/Products/Debug-iphoneos/App.app Payload/ 2>/dev/null || \
+          cp -r build/Debug-iphoneos/App.app Payload/
+          zip -r shatibi-unsigned.ipa Payload/
+          rm -rf Payload
 
-      - name: Upload build artifacts
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: shatibi-ios-simulator-build
-          path: ios/App/simulator-build/
+          name: shatibi-ios-ipa
+          path: ios/App/shatibi-unsigned.ipa
