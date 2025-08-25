@@ -213,7 +213,9 @@ export async function DELETE(req: Request) {
       );
     } else {
       const result = await EvalSheet.deleteMany({ _id: { $in: ids } });
-      const ratingResult = await Rating.deleteMany({ evalSheetId: { $in: ids } });
+      const ratingResult = await Rating.deleteMany({
+        evalSheetId: { $in: ids },
+      });
 
       if (!result || !ratingResult) {
         return new Response(

@@ -1,29 +1,35 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const schema = mongoose.Schema;
-const objId = schema.ObjectId;
-
-const evalSheetSchema = new schema({
-  modId: {
-    type: objId,
-    ref: "EvalMod", // Use model name directly to avoid circular dependency
-    required: true,
-  },
-  subject: { type: String, required: true },
-  passageDate: { type: Date, required: true },
-  sendDate: { type: Date, required: false },
-  statut: { type: String, required: true, default: "À venir" },
-  scaleId: { type: objId, ref: "Scale", required: true },
-  groupId: { type: String, required: true },
-  delete: { type: Boolean, required: false },
-});
-
-let EvalSheetModel;
-
-try {
-  EvalSheetModel = mongoose.model("EvalSheet");
-} catch {
-  EvalSheetModel = mongoose.model("EvalSheet", evalSheetSchema);
+export interface IEvalSheet extends Document {
+  modId: mongoose.Types.ObjectId;
+  subject: string;
+  passageDate: Date;
+  sendDate?: Date;
+  statut: string;
+  scaleId: mongoose.Types.ObjectId;
+  groupId: string;
+  teacherId?: string[];
+  groups?: string[];
+  delete?: boolean;
 }
 
-export default EvalSheetModel;
+const evalSheetSchema = new Schema<IEvalSheet>({
+  modId: { type: Schema.Types.ObjectId, ref: "EvalMod", required: true },
+  subject: { type: String, required: true },
+  passageDate: { type: Date, required: true },
+  sendDate: { type: Date },
+  statut: { type: String, required: true, default: "À venir" },
+  scaleId: { type: Schema.Types.ObjectId, ref: "Scale", required: true },
+  groupId: { type: String, required: true },
+  teacherId: [{ type: String }], // 👈 ajouté
+  groups: [{ type: String }], // 👈 ajouté
+  delete: { type: Boolean },
+});
+
+let EvalSheet: Model<IEvalSheet>;
+try {
+  EvalSheet = mongoose.model<IEvalSheet>("EvalSheet");
+} catch {
+  EvalSheet = mongoose.model<IEvalSheet>("EvalSheet", evalSheetSchema);
+}
+export default EvalSheet;

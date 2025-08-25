@@ -1,5 +1,5 @@
-import evalSheet from "@/models/evalSheet";
-import { EvalSheet } from "@/api/index";
+import evalSheet, { IEvalSheet } from "@/models/evalSheet";
+import { Document } from "mongoose";
 import sendMails from "@/utils/sendMails";
 import { startOfDay } from "date-fns";
 import dayjs from "dayjs";
@@ -42,9 +42,9 @@ export async function POST() {
 }
 
 async function processEvalSheet(
-  sheet: EvalSheet,
+  sheet: Document<unknown, {}, IEvalSheet> & IEvalSheet,
   today: Date
-): Promise<EvalSheet> {
+): Promise<Document<unknown, {}, IEvalSheet> & IEvalSheet> {
   const passageDate = startOfDay(new Date(sheet.passageDate));
   const sendDate = sheet.sendDate ? startOfDay(new Date(sheet.sendDate)) : null;
 
@@ -58,10 +58,6 @@ async function processEvalSheet(
           error
         );
       }
-    } else {
-      console.log(
-        `Skipping notification for sheet ${sheet._id} - Mailjet not configured`
-      );
     }
     sheet.statut = "Transmise";
   } else if (sendDate && sendDate > today) {
@@ -75,7 +71,9 @@ async function processEvalSheet(
   return sheet.save();
 }
 
-async function sendNotification(sheet: EvalSheet) {
+async function sendNotification(
+  sheet: Document<unknown, {}, IEvalSheet> & IEvalSheet
+) {
   if (!isMailjetConfigured) {
     console.log(`[MOCK] Would send notification for sheet ${sheet._id}`);
     return Promise.resolve();
