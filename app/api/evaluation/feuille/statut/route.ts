@@ -5,10 +5,11 @@ import { startOfDay } from "date-fns";
 import dayjs from "dayjs";
 
 const isMailjetConfigured =
-  process.env.MAILJET_API_KEY && process.env.MAILJET_SECRET_KEY;
+  !!process.env.MAILJET_API_KEY && !!process.env.MAILJET_SECRET_KEY;
 
 export async function POST() {
   const today = startOfDay(new Date());
+
   try {
     const evalSheets = await evalSheet.find({
       statut: { $nin: ["Supprimé", "Transmise"] },
@@ -18,9 +19,12 @@ export async function POST() {
       return createResponse({ message: "Aucune donnée trouvée" }, 404);
     }
 
-    const results = await Promise.allSettled(
+    // Cast results to simplify TypeScript's union
+    const results = (await Promise.allSettled(
       evalSheets.map((sheet) => processEvalSheet(sheet, today))
-    );
+    )) as PromiseSettledResult<
+      Document<unknown, {}, IEvalSheet> & IEvalSheet
+    >[];
 
     results.forEach((result, index) => {
       if (result.status === "rejected") {
