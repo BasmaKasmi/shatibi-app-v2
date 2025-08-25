@@ -58,12 +58,15 @@ jobs:
           npx cap add ios
           npx cap sync ios
 
+      - name: Clean previous Xcode build
+        run: rm -rf ios/App/build
+
       - name: Build iOS app for Simulator
         run: |
           cd ios/App
-          # Build for iOS Simulator only, bypassing code signing
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
             -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1" \
             CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
 
       - name: Collect Simulator build artifacts
