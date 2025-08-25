@@ -1,28 +1,35 @@
-// @ts-nocheck
+// @ts-nocheck OR keep strict checking and add types manually
 
-import mongoose from "mongoose";
+import mongoose, { Schema, Model, Document } from "mongoose";
 
-const evalModSchema = new mongoose.Schema({
+interface EvalSheet extends Document {
+  title: string;
+  description?: string;
+  format: string;
+  scale: mongoose.Types.ObjectId[];
+  coef: number;
+  teacherId?: string[];
+  department: string[];
+  delete?: boolean;
+}
+
+const evalSheetSchema = new Schema<EvalSheet>({
   title: { type: String, required: true, unique: true },
   description: { type: String },
   format: { type: String, required: true },
-  scale: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "Scale",
-    required: true,
-  },
+  scale: [{ type: Schema.Types.ObjectId, ref: "Scale", required: true }],
   coef: { type: Number, required: true },
-  teacherId: { type: [String] },
-  department: { type: [String], required: true },
-  delete: { type: Boolean, required: false },
+  teacherId: [{ type: String }],
+  department: [{ type: String, required: true }],
+  delete: { type: Boolean },
 });
 
-let EvalMod: any;
+let EvalSheetModel: Model<EvalSheet>;
 
 try {
-  EvalMod = mongoose.model("EvalMod");
+  EvalSheetModel = mongoose.model<EvalSheet>("EvalSheet");
 } catch {
-  EvalMod = mongoose.model("EvalMod", evalModSchema);
+  EvalSheetModel = mongoose.model<EvalSheet>("EvalSheet", evalSheetSchema);
 }
 
-export default EvalMod;
+export default EvalSheetModel;
