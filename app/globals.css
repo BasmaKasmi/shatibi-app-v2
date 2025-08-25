@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media only screen and (max-width: 360px) {
+  .progression {
+    margin-left: -20px;
+  }
+}
+
+.line {
+  width: 20vw;
+  height: 1px;
+  background-color: #e5e5e5;
+  margin: 0 10px;
+}

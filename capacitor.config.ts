@@ -1,0 +1,16 @@
+import { CapacitorConfig } from "@capacitor/cli";
+
+const config: CapacitorConfig = {
+  appId: "com.shatibi.app",
+  appName: "Shatibi",
+  webDir: "build-mobile",
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: "#FFFFFF",
+      showSpinner: false,
+    },
+  },
+};
+
+export default config;

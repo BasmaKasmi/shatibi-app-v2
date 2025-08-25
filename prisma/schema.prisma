@@ -1,0 +1,1946 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model admin_connect_stat {
+  id    Int       @id @default(autoincrement())
+  start DateTime? @db.DateTime(0)
+  end   DateTime? @db.DateTime(0)
+  token String?   @db.VarChar(255)
+  user  String?   @db.VarChar(255)
+}
+
+model admin_contact {
+  id                 Int                  @id @default(autoincrement())
+  last_name          String?              @db.VarChar(70)
+  first_name         String?              @db.VarChar(70)
+  external           Boolean?
+  mail               String?              @db.VarChar(200)
+  phone              String?              @db.VarChar(20)
+  mobile             String?              @db.VarChar(20)
+  sel                Boolean?
+  mail_to            Boolean?
+  sexe               String?              @db.VarChar(1)
+  univers            String?              @db.VarChar(1)
+  mother_mobile      String?              @db.VarChar(20)
+  father_mobile      String?              @db.VarChar(20)
+  archive_attendance archive_attendance[]
+  pathway_teacher    pathway_teacher[]
+  student            student[]
+  student_attendance student_attendance[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model admin_crontask {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  commands    String    @db.LongText
+  intervalcom Int
+  lastrun     DateTime? @db.DateTime(0)
+  active      Boolean?
+}
+
+model admin_crud_student {
+  id           Int      @id @default(autoincrement())
+  date         DateTime @db.DateTime(0)
+  operation    String   @db.VarChar(255)
+  student_id   Int
+  student_name String   @db.VarChar(255)
+  user         String?  @db.VarChar(255)
+}
+
+model admin_message {
+  id          Int       @id @default(autoincrement())
+  subject     String?   @db.VarChar(255)
+  message     String?   @db.LongText
+  date        DateTime? @db.Date
+  attach_name String?   @db.VarChar(255)
+  univers     String?   @db.VarChar(1)
+}
+
+model admin_role {
+  id        Int     @id @default(autoincrement())
+  plainText String  @db.VarChar(100)
+  code      String  @db.VarChar(100)
+  sel       Boolean
+}
+
+model admin_setting {
+  id                     Int      @id @default(autoincrement())
+  nomsociete             String   @db.VarChar(255)
+  pathway_menu           Boolean?
+  department_menu        Boolean?
+  level_menu             Boolean?
+  centre_name            String?  @db.VarChar(255)
+  centre_adresse         String?  @db.VarChar(255)
+  centre_zip             String?  @db.VarChar(10)
+  centre_city            String?  @db.VarChar(100)
+  centre_phone           String?  @db.VarChar(20)
+  centre_url             String?  @db.VarChar(255)
+  centre_mail            String?  @db.VarChar(255)
+  assess_abort           Boolean?
+  centre_mail_child      String?  @db.VarChar(255)
+  centre_mail_pwd        String?  @db.VarChar(255)
+  centre_mail_smtp       String?  @db.VarChar(255)
+  centre_mail_child_pwd  String?  @db.VarChar(255)
+  centre_mail_child_smtp String?  @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model admin_utilisateur {
+  id                                                                 Int              @id @default(autoincrement())
+  username                                                           String           @unique(map: "UNIQ_80062ABAF85E0677") @db.VarChar(255)
+  password                                                           String           @db.VarChar(255)
+  roles                                                              String           @db.LongText
+  teacher_id                                                         Int?
+  year_id                                                            Int?
+  email                                                              String           @unique(map: "UNIQ_80062ABAE7927C74") @db.VarChar(255)
+  enabled                                                            Boolean?
+  last_login                                                         DateTime?        @db.DateTime(0)
+  reset_token                                                        String?          @db.VarChar(255)
+  agenda_bg_color                                                    String?          @db.VarChar(50)
+  agenda_fg_color                                                    String?          @db.VarChar(50)
+  allow_agenda                                                       String?          @db.LongText
+  acc_home_sub                                                       Boolean?
+  acc_home_cash                                                      Boolean?
+  acc_home_comparison                                                Boolean?
+  acc_home_school                                                    Boolean?
+  acc_home_abs                                                       Boolean?
+  acc_home_stu                                                       Boolean?
+  acc_home_msg                                                       Boolean?
+  acc_home_sec                                                       Boolean?
+  acc_school_plan                                                    Boolean?
+  acc_school_trombi                                                  Boolean?
+  acc_school_assess                                                  Boolean?
+  acc_school_group                                                   Boolean?
+  acc_school_teacher                                                 Boolean?
+  acc_school_arch                                                    Boolean?
+  acc_school_tdb                                                     Boolean?
+  acc_sec_agenda                                                     Boolean?
+  acc_sec_contact                                                    Boolean?
+  acc_sec_rack                                                       Boolean?
+  acc_arch_stu                                                       Boolean?
+  acc_tdb_group                                                      Boolean?
+  acc_tdb_tdb                                                        Boolean?
+  acc_tdb_abs                                                        Boolean?
+  acc_tdb_pedago                                                     Boolean?
+  acc_teach_assess                                                   Boolean?
+  acc_teach_rack                                                     Boolean?
+  acc_teach_abs                                                      Boolean?
+  acc_teach_book                                                     Boolean?
+  back_route                                                         String?          @db.VarChar(50)
+  user_agenda_view                                                   String?          @db.VarChar(50)
+  system                                                             Boolean?
+  univers                                                            String?          @db.VarChar(1)
+  acc_adult                                                          Boolean?
+  acc_child                                                          Boolean?
+  acc_tdb_logging                                                    Boolean?
+  teacherChild_id                                                    Int?
+  learning_year                                                      learning_year?   @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_3371EDC640C1FEA7")
+  pathway_teacher_admin_utilisateur_teacher_idTopathway_teacher      pathway_teacher? @relation("admin_utilisateur_teacher_idTopathway_teacher", fields: [teacher_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_3371EDC641807E1D")
+  pathway_teacher_admin_utilisateur_teacherChild_idTopathway_teacher pathway_teacher? @relation("admin_utilisateur_teacherChild_idTopathway_teacher", fields: [teacherChild_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_80062ABA9D9ECC71")
+  note                                                               note[]
+  task                                                               task[]
+
+  @@index([year_id], map: "IDX_80062ABA40C1FEA7")
+  @@index([teacher_id], map: "IDX_80062ABA41807E1D")
+  @@index([teacherChild_id], map: "IDX_80062ABA9D9ECC71")
+}
+
+model archive_agenda {
+  id                   Int                   @id
+  year_id              Int?
+  date                 DateTime?             @db.Date
+  assessment           Boolean?
+  attendance           Boolean?
+  control              Boolean?
+  att_valid            Boolean?
+  groupHeader_id       Int?
+  present              Int?
+  percent              Decimal?              @db.Decimal(5, 2)
+  univers              String?               @db.VarChar(1)
+  learning_year        learning_year?        @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_26335B5440C1FEA7")
+  archive_group_header archive_group_header? @relation(fields: [groupHeader_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_26335B548BF89464")
+
+  @@index([year_id], map: "IDX_D1E8DC6240C1FEA7")
+  @@index([groupHeader_id], map: "IDX_D1E8DC628BF89464")
+}
+
+model archive_assess_header {
+  id                      Int                      @id
+  module_id               Int
+  year_id                 Int?
+  description             String?                  @db.VarChar(255)
+  skill_description       String?                  @db.VarChar(255)
+  date                    DateTime                 @db.Date
+  ratio_org               Int?
+  transcript              Boolean?
+  semester                String?                  @db.VarChar(2)
+  assessGranding_id       Int?
+  assessPattern_id        Int
+  groupHeader_id          Int
+  mode                    String?                  @db.VarChar(20)
+  univers                 String?                  @db.VarChar(1)
+  learning_year           learning_year?           @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2C8727440C1FEA7")
+  pathway_assess_granding pathway_assess_granding? @relation(fields: [assessGranding_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2C872744AF02AB3")
+  archive_assess_pattern  archive_assess_pattern   @relation(fields: [assessPattern_id], references: [id], onUpdate: Restrict, map: "FK_2C872748696B61A")
+  archive_group_header    archive_group_header     @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_2C872748BF89464")
+  archive_module          archive_module           @relation(fields: [module_id], references: [id], onUpdate: Restrict, map: "FK_2C87274AFC2B591")
+  archive_assessment      archive_assessment[]
+
+  @@index([year_id], map: "IDX_2F5AA62A40C1FEA7")
+  @@index([assessGranding_id], map: "IDX_2F5AA62A4AF02AB3")
+  @@index([assessPattern_id], map: "IDX_2F5AA62A8696B61A")
+  @@index([groupHeader_id], map: "IDX_2F5AA62A8BF89464")
+  @@index([module_id], map: "IDX_2F5AA62AAFC2B591")
+}
+
+model archive_assess_pattern {
+  id                        Int                         @id
+  department_id             Int?
+  year_id                   Int
+  description               String?                     @db.VarChar(255)
+  start_date                DateTime?                   @db.Date
+  end_date                  DateTime?                   @db.Date
+  factor                    Int?
+  assessType_id             Int?
+  code                      String?                     @db.VarChar(10)
+  admin                     Boolean?
+  univers                   String?                     @db.VarChar(1)
+  target                    String?                     @db.VarChar(5)
+  archive_assess_header     archive_assess_header[]
+  learning_year             learning_year               @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_18DB015740C1FEA7")
+  learning_assess_type      learning_assess_type?       @relation(fields: [assessType_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_18DB0157A3A7EE89")
+  pathway_department        pathway_department?         @relation(fields: [department_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_18DB0157AE80F5DF")
+  archive_pattern_module    archive_pattern_module[]
+  archive_single_assessment archive_single_assessment[]
+
+  @@index([year_id], map: "IDX_9425EF7040C1FEA7")
+  @@index([assessType_id], map: "IDX_9425EF70A3A7EE89")
+  @@index([department_id], map: "IDX_9425EF70AE80F5DF")
+}
+
+model archive_assessment {
+  id                                                                             Int                      @id
+  studiant_id                                                                    Int
+  note_org                                                                       Decimal?                 @db.Decimal(4, 1)
+  note                                                                           Decimal?                 @db.Decimal(4, 1)
+  skill_description                                                              String?                  @db.VarChar(255)
+  page_from                                                                      Int?
+  page_to                                                                        Int?
+  page_validate                                                                  Decimal?                 @db.Decimal(4, 1)
+  detail                                                                         Boolean?
+  nb_question                                                                    Int?
+  detail_valid                                                                   Boolean?
+  transcript                                                                     Boolean?
+  absent                                                                         Boolean?
+  assessHeader_id                                                                Int
+  assessGranding_id                                                              Int?
+  sourateFrom_id                                                                 Int?
+  sourateTo_id                                                                   Int?
+  no_note                                                                        Boolean?
+  no_validate                                                                    Boolean?
+  univers                                                                        String?                  @db.VarChar(1)
+  archive_assess_header                                                          archive_assess_header    @relation(fields: [assessHeader_id], references: [id], onUpdate: Restrict, map: "FK_45EE3A863D68839C")
+  pathway_assess_granding                                                        pathway_assess_granding? @relation(fields: [assessGranding_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_45EE3A864AF02AB3")
+  learning_coran_assess_archive_assessment_sourateTo_idTolearning_coran_assess   learning_coran_assess?   @relation("archive_assessment_sourateTo_idTolearning_coran_assess", fields: [sourateTo_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_45EE3A864E910A92")
+  learning_coran_assess_archive_assessment_sourateFrom_idTolearning_coran_assess learning_coran_assess?   @relation("archive_assessment_sourateFrom_idTolearning_coran_assess", fields: [sourateFrom_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_45EE3A8655EF9145")
+  student                                                                        student                  @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_45EE3A869BA9BF2B")
+  archive_coran_revision                                                         archive_coran_revision[]
+
+  @@index([assessHeader_id], map: "IDX_35C1EB953D68839C")
+  @@index([assessGranding_id], map: "IDX_35C1EB954AF02AB3")
+  @@index([sourateTo_id], map: "IDX_35C1EB954E910A92")
+  @@index([sourateFrom_id], map: "IDX_35C1EB9555EF9145")
+  @@index([studiant_id], map: "IDX_35C1EB959BA9BF2B")
+}
+
+model archive_attendance {
+  id                   Int                  @id
+  absence_id           Int?
+  studiant_id          Int?
+  contact_id           Int?
+  date                 DateTime?            @db.Date
+  present              Boolean?
+  comment              String?              @db.VarChar(255)
+  evidence             String?              @db.VarChar(255)
+  guest                Boolean?
+  abort                Boolean?
+  mail                 Boolean?
+  groupHeader_id       Int
+  resignation          Boolean?
+  swap                 Boolean?
+  univers              String?              @db.VarChar(1)
+  module_id            Int?
+  learning_absence     learning_absence?    @relation(fields: [absence_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_DF5F0A672DFF238F")
+  archive_group_header archive_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_DF5F0A678BF89464")
+  student              student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_DF5F0A679BA9BF2B")
+  archive_module       archive_module?      @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_DF5F0A67AFC2B591")
+  admin_contact        admin_contact?       @relation(fields: [contact_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_DF5F0A67E7A1254A")
+
+  @@index([absence_id], map: "IDX_AF70DB742DFF238F")
+  @@index([groupHeader_id], map: "IDX_AF70DB748BF89464")
+  @@index([studiant_id], map: "IDX_AF70DB749BA9BF2B")
+  @@index([module_id], map: "IDX_AF70DB74AFC2B591")
+  @@index([contact_id], map: "IDX_AF70DB74E7A1254A")
+}
+
+model archive_coran_revision {
+  id                 Int                 @id
+  assessment_id      Int?
+  question           String?             @db.VarChar(255)
+  no_granding        Boolean?
+  granding1          Int?
+  granding2          Int?
+  granding3          Int?
+  granding4          Int?
+  pages              Decimal?            @db.Decimal(5, 2)
+  total              Decimal?            @db.Decimal(5, 2)
+  univers            String?             @db.VarChar(1)
+  archive_assessment archive_assessment? @relation(fields: [assessment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_F07696E6DD3DD5F1")
+
+  @@index([assessment_id], map: "IDX_7C8878C1DD3DD5F1")
+}
+
+model archive_discount {
+  id               Int               @id
+  year_id          Int
+  studiant_id      Int
+  history_id       Int?
+  date             DateTime?         @db.Date
+  cause            String?           @db.VarChar(255)
+  amount           Decimal?          @db.Decimal(7, 2)
+  repayment        Boolean?
+  sup              Boolean?
+  payment_id       Int?
+  cheque_number    String?           @db.VarChar(20)
+  univers          String?           @db.VarChar(1)
+  learning_history learning_history? @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_364F0B4F1E058452")
+  learning_year    learning_year     @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_364F0B4F40C1FEA7")
+  learning_payment learning_payment? @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_364F0B4F4C3A3BB")
+  student          student           @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_364F0B4F9BA9BF2B")
+
+  @@index([history_id], map: "IDX_CC8F7B621E058452")
+  @@index([year_id], map: "IDX_CC8F7B6240C1FEA7")
+  @@index([payment_id], map: "IDX_CC8F7B624C3A3BB")
+  @@index([studiant_id], map: "IDX_CC8F7B629BA9BF2B")
+}
+
+model archive_due_studiant {
+  id                        Int                        @id
+  year_id                   Int
+  studiant_id               Int
+  motive_id                 Int?
+  univers                   String?                    @db.VarChar(1)
+  learning_year             learning_year              @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_37DB8A3840C1FEA7")
+  compta_student_due_motive compta_student_due_motive? @relation(fields: [motive_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_37DB8A389658649C")
+  student                   student                    @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_37DB8A389BA9BF2B")
+
+  @@index([year_id], map: "IDX_A7E059C740C1FEA7")
+  @@index([motive_id], map: "IDX_A7E059C79658649C")
+  @@index([studiant_id], map: "IDX_A7E059C79BA9BF2B")
+}
+
+model archive_gain {
+  id               Int               @id
+  year_id          Int
+  studiant_id      Int
+  history_id       Int?
+  calculated       Decimal?          @db.Decimal(7, 2)
+  really           Decimal?          @db.Decimal(7, 2)
+  sup              Boolean?
+  univers          String?           @db.VarChar(1)
+  learning_history learning_history? @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_560F66ED1E058452")
+  learning_year    learning_year     @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_560F66ED40C1FEA7")
+  student          student           @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_560F66ED9BA9BF2B")
+
+  @@index([history_id], map: "IDX_E0B0FB9B1E058452")
+  @@index([year_id], map: "IDX_E0B0FB9B40C1FEA7")
+  @@index([studiant_id], map: "IDX_E0B0FB9B9BA9BF2B")
+}
+
+model archive_group_content {
+  id                                                                              Int                  @id
+  studiant_id                                                                     Int
+  history_id                                                                      Int?
+  abort                                                                           Boolean?
+  date_abort                                                                      DateTime?            @db.DateTime(0)
+  next_level                                                                      Boolean?
+  swap                                                                            Boolean?
+  sup                                                                             Boolean?
+  groupHeader_id                                                                  Int
+  resignation                                                                     Boolean?
+  entry_date                                                                      DateTime?            @db.DateTime(0)
+  motive                                                                          String?              @db.VarChar(255)
+  swapToGroup_id                                                                  Int
+  univers                                                                         String?              @db.VarChar(1)
+  user                                                                            String?              @db.VarChar(100)
+  appreciation                                                                    String?              @db.LongText
+  learning_history                                                                learning_history?    @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_441A02151E058452")
+  archive_group_header_archive_group_content_groupHeader_idToarchive_group_header archive_group_header @relation("archive_group_content_groupHeader_idToarchive_group_header", fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_441A02158BF89464")
+  student                                                                         student              @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_441A02159BA9BF2B")
+  archive_group_header_archive_group_content_swapToGroup_idToarchive_group_header archive_group_header @relation("archive_group_content_swapToGroup_idToarchive_group_header", fields: [swapToGroup_id], references: [id], onUpdate: Restrict, map: "FK_441A02159CC2EB2E")
+
+  @@index([history_id], map: "IDX_6988D64B1E058452")
+  @@index([groupHeader_id], map: "IDX_6988D64B8BF89464")
+  @@index([studiant_id], map: "IDX_6988D64B9BA9BF2B")
+  @@index([swapToGroup_id], map: "IDX_6988D64B9CC2EB2E")
+}
+
+model archive_group_header {
+  id                                                                               Int                            @id
+  year_id                                                                          Int
+  classroom_id                                                                     Int
+  slot_id                                                                          Int
+  level_id                                                                         Int
+  description                                                                      String?                        @db.VarChar(255)
+  code                                                                             String?                        @db.VarChar(20)
+  max_male                                                                         Int?
+  max_female                                                                       Int?
+  nb_m_studiant                                                                    Int?
+  nb_f_studiant                                                                    Int?
+  valid                                                                            Boolean?
+  sel                                                                              Boolean?
+  dash                                                                             Boolean?
+  sup                                                                              Boolean?
+  mail_to                                                                          Boolean?
+  pricingType_id                                                                   Int?
+  module_id                                                                        Int?
+  univers                                                                          String?                        @db.VarChar(1)
+  short_description                                                                String?                        @db.VarChar(255)
+  auto_valid                                                                       Boolean?
+  next_level                                                                       Boolean?
+  next_required                                                                    Boolean?
+  archive_agenda                                                                   archive_agenda[]
+  archive_assess_header                                                            archive_assess_header[]
+  archive_attendance                                                               archive_attendance[]
+  archive_group_content_archive_group_content_groupHeader_idToarchive_group_header archive_group_content[]        @relation("archive_group_content_groupHeader_idToarchive_group_header")
+  archive_group_content_archive_group_content_swapToGroup_idToarchive_group_header archive_group_content[]        @relation("archive_group_content_swapToGroup_idToarchive_group_header")
+  learning_year                                                                    learning_year                  @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_6176113540C1FEA7")
+  pathway_slot                                                                     pathway_slot                   @relation(fields: [slot_id], references: [id], onUpdate: Restrict, map: "FK_6176113559E5119C")
+  pathway_level                                                                    pathway_level                  @relation(fields: [level_id], references: [id], onUpdate: Restrict, map: "FK_617611355FB14BA7")
+  pathway_classroom                                                                pathway_classroom              @relation(fields: [classroom_id], references: [id], onUpdate: Restrict, map: "FK_617611356278D5A8")
+  learning_pricing_type                                                            learning_pricing_type?         @relation(fields: [pricingType_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_61761135695113B2")
+  archive_group_module_teacher                                                     archive_group_module_teacher[]
+  archive_group_multiple                                                           archive_group_multiple[]
+  archive_group_number                                                             archive_group_number[]
+  archive_single_assessment                                                        archive_single_assessment[]
+  archive_stat_absence                                                             archive_stat_absence[]
+  archive_subscrib_group                                                           archive_subscrib_group[]
+  archive_subscrib_waiting                                                         archive_subscrib_waiting[]
+  archive_transcript_content                                                       archive_transcript_content[]
+  archive_waiting_list                                                             archive_waiting_list[]
+
+  @@index([year_id], map: "IDX_F14DC2CA40C1FEA7")
+  @@index([slot_id], map: "IDX_F14DC2CA59E5119C")
+  @@index([level_id], map: "IDX_F14DC2CA5FB14BA7")
+  @@index([classroom_id], map: "IDX_F14DC2CA6278D5A8")
+  @@index([pricingType_id], map: "IDX_F14DC2CA695113B2")
+}
+
+model archive_group_module_teacher {
+  id                   Int                   @id
+  module_id            Int?
+  teacher_id           Int?
+  sup                  Boolean?
+  groupHeader_id       Int?
+  univers              String?               @db.VarChar(1)
+  pathway_teacher      pathway_teacher?      @relation(fields: [teacher_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_CC805DC841807E1D")
+  archive_group_header archive_group_header? @relation(fields: [groupHeader_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_CC805DC88BF89464")
+  archive_module       archive_module?       @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_CC805DC8AFC2B591")
+
+  @@index([teacher_id], map: "IDX_CF5B928841807E1D")
+  @@index([groupHeader_id], map: "IDX_CF5B92888BF89464")
+  @@index([module_id], map: "IDX_CF5B9288AFC2B591")
+}
+
+model archive_group_multiple {
+  id                   Int                   @id
+  module_id            Int?
+  slot_id              Int?
+  sup                  Boolean?
+  day                  String?               @db.VarChar(2)
+  groupHeader_id       Int?
+  pathway_slot         pathway_slot?         @relation(fields: [slot_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_C7DA5D9159E5119C")
+  archive_group_header archive_group_header? @relation(fields: [groupHeader_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_C7DA5D918BF89464")
+  archive_module       archive_module?       @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_C7DA5D91AFC2B591")
+
+  @@index([slot_id], map: "IDX_4B24B3B659E5119C")
+  @@index([groupHeader_id], map: "IDX_4B24B3B68BF89464")
+  @@index([module_id], map: "IDX_4B24B3B6AFC2B591")
+}
+
+model archive_group_number {
+  id                   Int                  @id
+  date                 DateTime?            @db.DateTime(0)
+  numberM              Int?
+  numberF              Int?
+  groupHeader_id       Int
+  univers              String?              @db.VarChar(1)
+  archive_group_header archive_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_9994A6A08BF89464")
+
+  @@index([groupHeader_id], map: "IDX_9AF755F8BF89464")
+}
+
+model archive_module {
+  id                           Int                            @id
+  department_id                Int
+  year_id                      Int
+  description                  String?                        @db.VarChar(255)
+  code                         String?                        @unique(map: "UNIQ_F121323D77153098") @db.VarChar(10)
+  start_date                   DateTime?                      @db.Date
+  end_date                     DateTime?                      @db.Date
+  sel                          Boolean?
+  sup                          Boolean?
+  close                        Boolean?
+  univers                      String?                        @db.VarChar(1)
+  archive_assess_header        archive_assess_header[]
+  archive_attendance           archive_attendance[]
+  archive_group_module_teacher archive_group_module_teacher[]
+  archive_group_multiple       archive_group_multiple[]
+  learning_year                learning_year                  @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_6FAB50B40C1FEA7")
+  pathway_department           pathway_department             @relation(fields: [department_id], references: [id], onUpdate: Restrict, map: "FK_6FAB50BAE80F5DF")
+  archive_module_teacher       archive_module_teacher[]
+  archive_pattern_module       archive_pattern_module[]
+  archive_single_assessment    archive_single_assessment[]
+  archive_transcript           archive_transcript[]
+  archive_transcript_content   archive_transcript_content[]
+
+  @@index([year_id], map: "IDX_F121323D40C1FEA7")
+  @@index([department_id], map: "IDX_F121323DAE80F5DF")
+}
+
+model archive_module_teacher {
+  module_id       Int
+  teacher_id      Int
+  archive_module  archive_module  @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_5C2E1A01AFC2B591")
+  pathway_teacher pathway_teacher @relation(fields: [teacher_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_C20DB11841807E1D")
+
+  @@id([module_id, teacher_id])
+  @@index([teacher_id], map: "IDX_5C2E1A0141807E1D")
+  @@index([module_id], map: "IDX_5C2E1A01AFC2B591")
+}
+
+model archive_pattern_module {
+  assesspattern_id       Int
+  module_id              Int
+  archive_module         archive_module         @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_82245855AFC2B591")
+  archive_assess_pattern archive_assess_pattern @relation(fields: [assesspattern_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_F5DE256CC9CBB5CA")
+
+  @@id([assesspattern_id, module_id])
+  @@index([module_id], map: "IDX_82245855AFC2B591")
+  @@index([assesspattern_id], map: "IDX_82245855C9CBB5CA")
+}
+
+model archive_schedule {
+  id                  Int                  @id
+  payment_id          Int?
+  year_id             Int?
+  studiant_id         Int?
+  history_id          Int?
+  date                DateTime?            @db.Date
+  amount              Decimal?             @db.Decimal(7, 2)
+  exchange            Boolean?
+  postponed           Boolean?
+  cheque_name         String?              @db.VarChar(100)
+  solded              Boolean?
+  cheque_number       String?              @db.VarChar(20)
+  comparison          Boolean?
+  sup                 Boolean?
+  imp                 Boolean?
+  imp_date            DateTime?            @db.Date
+  bankName_id         Int?
+  univers             String?              @db.VarChar(1)
+  learning_history    learning_history?    @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8D97AEBA1E058452")
+  learning_year       learning_year?       @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8D97AEBA40C1FEA7")
+  learning_payment    learning_payment?    @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8D97AEBA4C3A3BB")
+  compta_student_bank compta_student_bank? @relation(fields: [bankName_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8D97AEBA67FC6DB4")
+  student             student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8D97AEBA9BA9BF2B")
+
+  @@index([history_id], map: "IDX_7757DE971E058452")
+  @@index([year_id], map: "IDX_7757DE9740C1FEA7")
+  @@index([payment_id], map: "IDX_7757DE974C3A3BB")
+  @@index([bankName_id], map: "IDX_7757DE9767FC6DB4")
+  @@index([studiant_id], map: "IDX_7757DE979BA9BF2B")
+}
+
+model archive_single_assessment {
+  id                                                                                    Int                             @id
+  studiant_id                                                                           Int
+  module_id                                                                             Int
+  year_id                                                                               Int?
+  description                                                                           String?                         @db.VarChar(255)
+  date                                                                                  DateTime                        @db.Date
+  note_org                                                                              Decimal?                        @db.Decimal(4, 1)
+  note                                                                                  Decimal?                        @db.Decimal(4, 1)
+  skill_description                                                                     String?                         @db.VarChar(255)
+  page_from                                                                             Int?
+  page_to                                                                               Int?
+  page_validate                                                                         Decimal?                        @db.Decimal(4, 1)
+  detail                                                                                Boolean?
+  nb_question                                                                           Int?
+  detail_valid                                                                          Boolean?
+  ratio_org                                                                             Int?
+  mode                                                                                  String?                         @db.VarChar(20)
+  semester                                                                              String?                         @db.VarChar(2)
+  transcript                                                                            Boolean?
+  absent                                                                                Boolean?
+  no_note                                                                               Boolean?
+  no_validate                                                                           Boolean?
+  univers                                                                               String?                         @db.VarChar(1)
+  groupHeader_id                                                                        Int
+  assessGranding_id                                                                     Int?
+  assessPattern_id                                                                      Int
+  sourateFrom_id                                                                        Int?
+  sourateTo_id                                                                          Int?
+  learning_year                                                                         learning_year?                  @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_FF67C76A40C1FEA7")
+  pathway_assess_granding                                                               pathway_assess_granding?        @relation(fields: [assessGranding_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_FF67C76A4AF02AB3")
+  learning_coran_assess_archive_single_assessment_sourateTo_idTolearning_coran_assess   learning_coran_assess?          @relation("archive_single_assessment_sourateTo_idTolearning_coran_assess", fields: [sourateTo_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_FF67C76A4E910A92")
+  learning_coran_assess_archive_single_assessment_sourateFrom_idTolearning_coran_assess learning_coran_assess?          @relation("archive_single_assessment_sourateFrom_idTolearning_coran_assess", fields: [sourateFrom_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_FF67C76A55EF9145")
+  archive_assess_pattern                                                                archive_assess_pattern          @relation(fields: [assessPattern_id], references: [id], onUpdate: Restrict, map: "FK_FF67C76A8696B61A")
+  archive_group_header                                                                  archive_group_header            @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_FF67C76A8BF89464")
+  student                                                                               student                         @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_FF67C76A9BA9BF2B")
+  archive_module                                                                        archive_module                  @relation(fields: [module_id], references: [id], onUpdate: Restrict, map: "FK_FF67C76AAFC2B591")
+  archive_single_coran_revision                                                         archive_single_coran_revision[]
+
+  @@index([year_id], map: "IDX_589D96FA40C1FEA7")
+  @@index([assessGranding_id], map: "IDX_589D96FA4AF02AB3")
+  @@index([sourateTo_id], map: "IDX_589D96FA4E910A92")
+  @@index([sourateFrom_id], map: "IDX_589D96FA55EF9145")
+  @@index([assessPattern_id], map: "IDX_589D96FA8696B61A")
+  @@index([groupHeader_id], map: "IDX_589D96FA8BF89464")
+  @@index([studiant_id], map: "IDX_589D96FA9BA9BF2B")
+  @@index([module_id], map: "IDX_589D96FAAFC2B591")
+}
+
+model archive_single_coran_revision {
+  id                        Int                        @id
+  assessment_id             Int?
+  question                  String?                    @db.VarChar(255)
+  no_granding               Boolean?
+  granding1                 Int?
+  granding2                 Int?
+  granding3                 Int?
+  granding4                 Int?
+  pages                     Decimal?                   @db.Decimal(5, 2)
+  total                     Decimal?                   @db.Decimal(5, 2)
+  univers                   String?                    @db.VarChar(1)
+  archive_single_assessment archive_single_assessment? @relation(fields: [assessment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_1036F175DD3DD5F1")
+
+  @@index([assessment_id], map: "IDX_66E96B2ADD3DD5F1")
+}
+
+model archive_stat_absence {
+  id                   Int                  @id
+  studiant_id          Int?
+  year_id              Int?
+  absence_id           Int?
+  startDate            DateTime?            @db.Date
+  endDate              DateTime?            @db.Date
+  nbAbs                Int?
+  groupHeader_id       Int
+  learning_absence     learning_absence?    @relation(fields: [absence_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4E22F6742DFF238F")
+  learning_year        learning_year?       @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4E22F67440C1FEA7")
+  archive_group_header archive_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_4E22F6748BF89464")
+  student              student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4E22F6749BA9BF2B")
+
+  @@index([absence_id], map: "IDX_DE19258B2DFF238F")
+  @@index([year_id], map: "IDX_DE19258B40C1FEA7")
+  @@index([groupHeader_id], map: "IDX_DE19258B8BF89464")
+  @@index([studiant_id], map: "IDX_DE19258B9BA9BF2B")
+}
+
+model archive_subscrib_group {
+  id                   Int                  @id
+  gift                 Boolean?
+  user                 String?              @db.VarChar(50)
+  groupHeader_id       Int
+  waiting              Boolean?
+  univers              String?              @db.VarChar(1)
+  archive_group_header archive_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_E9A831C78BF89464")
+
+  @@index([groupHeader_id], map: "IDX_6556DFE08BF89464")
+}
+
+model archive_subscrib_waiting {
+  id                   Int                  @id
+  subscrib             Boolean?
+  user                 String?              @db.VarChar(50)
+  groupHeader_id       Int
+  univers              String?              @db.VarChar(1)
+  archive_group_header archive_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_7A83EEF78BF89464")
+
+  @@index([groupHeader_id], map: "IDX_E7F41F138BF89464")
+}
+
+model archive_transcript {
+  id                         Int                          @id
+  studiant_id                Int?
+  year_id                    Int?
+  average                    Decimal?                     @db.Decimal(5, 1)
+  yearly                     Boolean?
+  annual_average             Decimal?                     @db.Decimal(5, 1)
+  valid                      Boolean?
+  next_step                  Boolean?
+  semester                   String?                      @db.VarChar(2)
+  module_id                  Int?
+  univers                    String?                      @db.VarChar(1)
+  learning_year              learning_year?               @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_1A4A103540C1FEA7")
+  student                    student?                     @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_1A4A10359BA9BF2B")
+  archive_module             archive_module?              @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_1A4A1035AFC2B591")
+  archive_transcript_content archive_transcript_content[]
+
+  @@index([year_id], map: "IDX_6A65C12640C1FEA7")
+  @@index([studiant_id], map: "IDX_6A65C1269BA9BF2B")
+  @@index([module_id], map: "IDX_6A65C126AFC2B591")
+}
+
+model archive_transcript_content {
+  id                   Int                   @id
+  transcript_id        Int?
+  group_id             Int?
+  appreciation         String?               @db.LongText
+  average              Decimal?              @db.Decimal(5, 1)
+  nb_abs               Int?
+  nb_justified_abs     Int?
+  valid                Boolean?
+  semester             String?               @db.VarChar(2)
+  module_id            Int?
+  univers              String?               @db.VarChar(1)
+  archive_transcript   archive_transcript?   @relation(fields: [transcript_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_A4EDB62AA4F53E3E")
+  archive_module       archive_module?       @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_A4EDB62AAFC2B591")
+  archive_group_header archive_group_header? @relation(fields: [group_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_A4EDB62AFE54D947")
+
+  @@index([transcript_id], map: "IDX_5445DF3FA4F53E3E")
+  @@index([module_id], map: "IDX_5445DF3FAFC2B591")
+  @@index([group_id], map: "IDX_5445DF3FFE54D947")
+}
+
+model archive_waiting_list {
+  id                   Int                  @id
+  studiant_id          Int?
+  inscription_date     DateTime             @db.Date
+  hierarchy            Int
+  comment              String?              @db.LongText
+  groupHeader_id       Int
+  internal             Boolean?
+  compta               Boolean?
+  multi                Boolean?
+  univers              String?              @db.VarChar(1)
+  archive_group_header archive_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_3871F77F8BF89464")
+  student              student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_3871F77F9BA9BF2B")
+
+  @@index([groupHeader_id], map: "IDX_A84A24808BF89464")
+  @@index([studiant_id], map: "IDX_A84A24809BA9BF2B")
+}
+
+model assessment {
+  id                                                                     Int                         @id @default(autoincrement())
+  studiant_id                                                            Int
+  note                                                                   Decimal?                    @db.Decimal(4, 1)
+  note_org                                                               Decimal?                    @db.Decimal(4, 1)
+  skill_description                                                      String?                     @db.VarChar(255)
+  assessHeader_id                                                        Int
+  assessGranding_id                                                      Int?
+  detail                                                                 Boolean?
+  page_from                                                              Int?
+  page_validate                                                          Decimal?                    @db.Decimal(4, 1)
+  page_to                                                                Int?
+  nb_question                                                            Int?
+  detail_valid                                                           Boolean?
+  transcript                                                             Boolean?
+  absent                                                                 Boolean?
+  sourateFrom_id                                                         Int?
+  sourateTo_id                                                           Int?
+  no_note                                                                Boolean?
+  no_validate                                                            Boolean?
+  univers                                                                String?                     @db.VarChar(1)
+  assessment_header                                                      assessment_header           @relation(fields: [assessHeader_id], references: [id], onUpdate: Restrict, map: "FK_7E8F734B3D68839C")
+  pathway_assess_granding                                                pathway_assess_granding?    @relation(fields: [assessGranding_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_7E8F734B4AF02AB3")
+  learning_coran_assess_assessment_sourateTo_idTolearning_coran_assess   learning_coran_assess?      @relation("assessment_sourateTo_idTolearning_coran_assess", fields: [sourateTo_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_7E8F734B4E910A92")
+  learning_coran_assess_assessment_sourateFrom_idTolearning_coran_assess learning_coran_assess?      @relation("assessment_sourateFrom_idTolearning_coran_assess", fields: [sourateFrom_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_7E8F734B55EF9145")
+  student                                                                student                     @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_7E8F734B9BA9BF2B")
+  assessment_coran_revision                                              assessment_coran_revision[]
+
+  @@index([assessHeader_id], map: "IDX_F7523D703D68839C")
+  @@index([assessGranding_id], map: "IDX_F7523D704AF02AB3")
+  @@index([sourateTo_id], map: "IDX_F7523D704E910A92")
+  @@index([sourateFrom_id], map: "IDX_F7523D7055EF9145")
+  @@index([studiant_id], map: "IDX_F7523D709BA9BF2B")
+}
+
+model assessment_coran_revision {
+  id            Int         @id @default(autoincrement())
+  question      String?     @db.VarChar(255)
+  no_granding   Boolean?
+  granding1     Int?
+  granding2     Int?
+  granding3     Int?
+  granding4     Int?
+  pages         Decimal?    @db.Decimal(5, 2)
+  total         Decimal?    @db.Decimal(5, 2)
+  assessment_id Int?
+  univers       String?     @db.VarChar(1)
+  assessment    assessment? @relation(fields: [assessment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_C6F7A5B0DD3DD5F1")
+
+  @@index([assessment_id], map: "IDX_A4E1CC61DD3DD5F1")
+}
+
+model assessment_header {
+  id                      Int                      @id @default(autoincrement())
+  module_id               Int
+  date                    DateTime                 @db.Date
+  assessPattern_id        Int
+  groupHeader_id          Int
+  ratio_org               Int?
+  year_id                 Int?
+  skill_description       String?                  @db.VarChar(255)
+  assessGranding_id       Int?
+  transcript              Boolean?
+  semester                String?                  @db.VarChar(2)
+  description             String?                  @db.VarChar(255)
+  mode                    String?                  @db.VarChar(20)
+  univers                 String?                  @db.VarChar(1)
+  assessment              assessment[]
+  learning_year           learning_year?           @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_80B1D2DE40C1FEA7")
+  pathway_assess_granding pathway_assess_granding? @relation(fields: [assessGranding_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_80B1D2DE4AF02AB3")
+  pathway_assess_pattern  pathway_assess_pattern   @relation(fields: [assessPattern_id], references: [id], onUpdate: Restrict, map: "FK_80B1D2DE8696B61A")
+  pathway_group_header    pathway_group_header     @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_80B1D2DE8BF89464")
+  pathway_module          pathway_module           @relation(fields: [module_id], references: [id], onUpdate: Restrict, map: "FK_80B1D2DEAFC2B591")
+
+  @@index([year_id], map: "IDX_9AAF39AF40C1FEA7")
+  @@index([assessGranding_id], map: "IDX_9AAF39AF4AF02AB3")
+  @@index([assessPattern_id], map: "IDX_9AAF39AF8696B61A")
+  @@index([groupHeader_id], map: "IDX_9AAF39AF8BF89464")
+  @@index([module_id], map: "IDX_9AAF39AFAFC2B591")
+}
+
+model assessment_single_assessment {
+  id                                                                                       Int                                @id @default(autoincrement())
+  studiant_id                                                                              Int
+  module_id                                                                                Int
+  year_id                                                                                  Int?
+  description                                                                              String?                            @db.VarChar(255)
+  date                                                                                     DateTime                           @db.Date
+  note_org                                                                                 Decimal?                           @db.Decimal(4, 1)
+  note                                                                                     Decimal?                           @db.Decimal(4, 1)
+  skill_description                                                                        String?                            @db.VarChar(255)
+  page_from                                                                                Int?
+  page_to                                                                                  Int?
+  page_validate                                                                            Decimal?                           @db.Decimal(4, 1)
+  detail                                                                                   Boolean?
+  nb_question                                                                              Int?
+  detail_valid                                                                             Boolean?
+  ratio_org                                                                                Int?
+  mode                                                                                     String?                            @db.VarChar(20)
+  semester                                                                                 String?                            @db.VarChar(2)
+  transcript                                                                               Boolean?
+  absent                                                                                   Boolean?
+  no_note                                                                                  Boolean?
+  no_validate                                                                              Boolean?
+  univers                                                                                  String?                            @db.VarChar(1)
+  groupHeader_id                                                                           Int
+  assessGranding_id                                                                        Int?
+  assessPattern_id                                                                         Int
+  sourateFrom_id                                                                           Int?
+  sourateTo_id                                                                             Int?
+  learning_year                                                                            learning_year?                     @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_F98243D840C1FEA7")
+  pathway_assess_granding                                                                  pathway_assess_granding?           @relation(fields: [assessGranding_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_F98243D84AF02AB3")
+  learning_coran_assess_assessment_single_assessment_sourateTo_idTolearning_coran_assess   learning_coran_assess?             @relation("assessment_single_assessment_sourateTo_idTolearning_coran_assess", fields: [sourateTo_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_F98243D84E910A92")
+  learning_coran_assess_assessment_single_assessment_sourateFrom_idTolearning_coran_assess learning_coran_assess?             @relation("assessment_single_assessment_sourateFrom_idTolearning_coran_assess", fields: [sourateFrom_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_F98243D855EF9145")
+  pathway_assess_pattern                                                                   pathway_assess_pattern             @relation(fields: [assessPattern_id], references: [id], onUpdate: Restrict, map: "FK_F98243D88696B61A")
+  pathway_group_header                                                                     pathway_group_header               @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_F98243D88BF89464")
+  student                                                                                  student                            @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_F98243D89BA9BF2B")
+  pathway_module                                                                           pathway_module                     @relation(fields: [module_id], references: [id], onUpdate: Restrict, map: "FK_F98243D8AFC2B591")
+  assessment_single_coran_revision                                                         assessment_single_coran_revision[]
+
+  @@index([year_id], map: "IDX_3522790240C1FEA7")
+  @@index([assessGranding_id], map: "IDX_352279024AF02AB3")
+  @@index([sourateTo_id], map: "IDX_352279024E910A92")
+  @@index([sourateFrom_id], map: "IDX_3522790255EF9145")
+  @@index([assessPattern_id], map: "IDX_352279028696B61A")
+  @@index([groupHeader_id], map: "IDX_352279028BF89464")
+  @@index([studiant_id], map: "IDX_352279029BA9BF2B")
+  @@index([module_id], map: "IDX_35227902AFC2B591")
+}
+
+model assessment_single_coran_revision {
+  id                           Int                           @id @default(autoincrement())
+  assessment_id                Int?
+  question                     String?                       @db.VarChar(255)
+  no_granding                  Boolean?
+  granding1                    Int?
+  granding2                    Int?
+  granding3                    Int?
+  granding4                    Int?
+  pages                        Decimal?                      @db.Decimal(5, 2)
+  total                        Decimal?                      @db.Decimal(5, 2)
+  univers                      String?                       @db.VarChar(1)
+  assessment_single_assessment assessment_single_assessment? @relation(fields: [assessment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8B1B66A4DD3DD5F1")
+
+  @@index([assessment_id], map: "IDX_D7DB6D6DDD3DD5F1")
+}
+
+model assessment_transcript {
+  id                            Int                             @id @default(autoincrement())
+  studiant_id                   Int?
+  year_id                       Int?
+  average                       Decimal?                        @db.Decimal(5, 1)
+  yearly                        Boolean?
+  annual_average                Decimal?                        @db.Decimal(5, 1)
+  valid                         Boolean?
+  semester                      String?                         @db.VarChar(2)
+  next_step                     Boolean?
+  module_id                     Int?
+  univers                       String?                         @db.VarChar(1)
+  learning_year                 learning_year?                  @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_212B59F840C1FEA7")
+  student                       student?                        @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_212B59F89BA9BF2B")
+  pathway_module                pathway_module?                 @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_212B59F8AFC2B591")
+  assessment_transcript_content assessment_transcript_content[]
+
+  @@index([year_id], map: "IDX_198C86340C1FEA7")
+  @@index([studiant_id], map: "IDX_198C8639BA9BF2B")
+  @@index([module_id], map: "IDX_198C863AFC2B591")
+}
+
+model assessment_transcript_content {
+  id                    Int                    @id @default(autoincrement())
+  transcript_id         Int?
+  group_id              Int?
+  appreciation          String?                @db.LongText
+  average               Decimal?               @db.Decimal(5, 1)
+  nb_abs                Int?
+  nb_justified_abs      Int?
+  valid                 Boolean?
+  semester              String?                @db.VarChar(2)
+  module_id             Int?
+  univers               String?                @db.VarChar(1)
+  assessment_transcript assessment_transcript? @relation(fields: [transcript_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8184810EA4F53E3E")
+  pathway_module        pathway_module?        @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8184810EAFC2B591")
+  pathway_group_header  pathway_group_header?  @relation(fields: [group_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_8184810EFE54D947")
+
+  @@index([transcript_id], map: "IDX_E74E1AFEA4F53E3E")
+  @@index([module_id], map: "IDX_E74E1AFEAFC2B591")
+  @@index([group_id], map: "IDX_E74E1AFEFE54D947")
+}
+
+model compta_centre_category {
+  id                     Int                      @id @default(autoincrement())
+  description            String?                  @db.VarChar(255)
+  compta_centre_receipts compta_centre_receipts[]
+  compta_centre_spanding compta_centre_spanding[]
+}
+
+model compta_centre_receipts {
+  id                     Int                     @id @default(autoincrement())
+  category_id            Int?
+  payment_id             Int?
+  year_id                Int?
+  date                   DateTime?               @db.Date
+  amount                 Decimal?                @db.Decimal(7, 2)
+  chq_number             String?                 @db.VarChar(50)
+  comment                String?                 @db.LongText
+  proof_url              String?                 @db.VarChar(255)
+  extension              String?                 @db.VarChar(5)
+  reconciliation         Boolean?
+  compta_centre_category compta_centre_category? @relation(fields: [category_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_183BEA8E12469DE2")
+  learning_year          learning_year?          @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_183BEA8E40C1FEA7")
+  learning_payment       learning_payment?       @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_183BEA8E4C3A3BB")
+
+  @@index([category_id], map: "IDX_A1D159A912469DE2")
+  @@index([year_id], map: "IDX_A1D159A940C1FEA7")
+  @@index([payment_id], map: "IDX_A1D159A94C3A3BB")
+}
+
+model compta_centre_spanding {
+  id                     Int                     @id @default(autoincrement())
+  category_id            Int?
+  payment_id             Int?
+  year_id                Int?
+  date                   DateTime?               @db.Date
+  recipient              String?                 @db.VarChar(255)
+  amount                 Decimal?                @db.Decimal(7, 2)
+  chq_number             String?                 @db.VarChar(50)
+  comment                String?                 @db.LongText
+  proof_url              String?                 @db.VarChar(255)
+  extension              String?                 @db.VarChar(5)
+  reconciliation         Boolean?
+  compta_centre_category compta_centre_category? @relation(fields: [category_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_9005A7E712469DE2")
+  learning_year          learning_year?          @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_9005A7E740C1FEA7")
+  learning_payment       learning_payment?       @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_9005A7E74C3A3BB")
+
+  @@index([category_id], map: "IDX_29EF14C012469DE2")
+  @@index([year_id], map: "IDX_29EF14C040C1FEA7")
+  @@index([payment_id], map: "IDX_29EF14C04C3A3BB")
+}
+
+model compta_student_bank {
+  id                              Int                               @id @default(autoincrement())
+  description                     String?                           @db.VarChar(100)
+  archive_schedule                archive_schedule[]
+  compta_student_schedule         compta_student_schedule[]
+  compta_student_waiting_schedule compta_student_waiting_schedule[]
+}
+
+model compta_student_discount {
+  id               Int               @id @default(autoincrement())
+  year_id          Int
+  studiant_id      Int
+  cause            String?           @db.VarChar(255)
+  amount           Decimal?          @db.Decimal(7, 2)
+  history_id       Int?
+  repayment        Boolean?
+  sup              Boolean?
+  date             DateTime?         @db.Date
+  payment_id       Int?
+  cheque_number    String?           @db.VarChar(20)
+  univers          String?           @db.VarChar(1)
+  learning_history learning_history? @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_CB0EA461E058452")
+  learning_year    learning_year     @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_CB0EA4640C1FEA7")
+  learning_payment learning_payment? @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_CB0EA464C3A3BB")
+  student          student           @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_CB0EA469BA9BF2B")
+
+  @@index([history_id], map: "IDX_3261B22E1E058452")
+  @@index([year_id], map: "IDX_3261B22E40C1FEA7")
+  @@index([payment_id], map: "IDX_3261B22E4C3A3BB")
+  @@index([studiant_id], map: "IDX_3261B22E9BA9BF2B")
+}
+
+model compta_student_due_motive {
+  id                          Int                           @id @default(autoincrement())
+  description                 String?                       @db.VarChar(255)
+  archive_due_studiant        archive_due_studiant[]
+  compta_student_due_studiant compta_student_due_studiant[]
+}
+
+model compta_student_due_studiant {
+  id                        Int                        @id @default(autoincrement())
+  year_id                   Int
+  studiant_id               Int
+  motive_id                 Int?
+  univers                   String?                    @db.VarChar(1)
+  learning_year             learning_year              @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_B7DB5BE540C1FEA7")
+  compta_student_due_motive compta_student_due_motive? @relation(fields: [motive_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_B7DB5BE59658649C")
+  student                   student                    @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_B7DB5BE59BA9BF2B")
+
+  @@index([year_id], map: "IDX_72A412F440C1FEA7")
+  @@index([motive_id], map: "IDX_72A412F49658649C")
+  @@index([studiant_id], map: "IDX_72A412F49BA9BF2B")
+}
+
+model compta_student_gain {
+  id               Int               @id @default(autoincrement())
+  year_id          Int
+  studiant_id      Int
+  calculated       Decimal?          @db.Decimal(7, 2)
+  really           Decimal?          @db.Decimal(7, 2)
+  history_id       Int?
+  sup              Boolean?
+  univers          String?           @db.VarChar(1)
+  learning_history learning_history? @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_C0F4DCB1E058452")
+  learning_year    learning_year     @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_C0F4DCB40C1FEA7")
+  student          student           @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_C0F4DCB9BA9BF2B")
+
+  @@index([history_id], map: "IDX_9A305DA41E058452")
+  @@index([year_id], map: "IDX_9A305DA440C1FEA7")
+  @@index([studiant_id], map: "IDX_9A305DA49BA9BF2B")
+}
+
+model compta_student_schedule {
+  id                  Int                  @id @default(autoincrement())
+  payment_id          Int?
+  studiant_id         Int?
+  date                DateTime?            @db.Date
+  amount              Decimal?             @db.Decimal(7, 2)
+  exchange            Boolean?
+  postponed           Boolean?
+  cheque_name         String?              @db.VarChar(100)
+  solded              Boolean?
+  cheque_number       String?              @db.VarChar(20)
+  history_id          Int?
+  sup                 Boolean?
+  year_id             Int?
+  imp                 Boolean?
+  imp_date            DateTime?            @db.Date
+  bankName_id         Int?
+  comparison          Boolean?
+  univers             String?              @db.VarChar(1)
+  learning_history    learning_history?    @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_B7684FB31E058452")
+  learning_year       learning_year?       @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_B7684FB340C1FEA7")
+  learning_payment    learning_payment?    @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_B7684FB34C3A3BB")
+  compta_student_bank compta_student_bank? @relation(fields: [bankName_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_B7684FB367FC6DB4")
+  student             student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_B7684FB39BA9BF2B")
+
+  @@index([history_id], map: "IDX_89B917DB1E058452")
+  @@index([year_id], map: "IDX_89B917DB40C1FEA7")
+  @@index([payment_id], map: "IDX_89B917DB4C3A3BB")
+  @@index([bankName_id], map: "IDX_89B917DB67FC6DB4")
+  @@index([studiant_id], map: "IDX_89B917DB9BA9BF2B")
+}
+
+model compta_student_waiting_discount {
+  id               Int               @id @default(autoincrement())
+  year_id          Int
+  studiant_id      Int
+  history_id       Int?
+  date             DateTime?         @db.Date
+  cause            String?           @db.VarChar(255)
+  amount           Decimal?          @db.Decimal(7, 2)
+  repayment        Boolean?
+  sup              Boolean?
+  univers          String?           @db.VarChar(1)
+  learning_history learning_history? @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_9534A90C1E058452")
+  learning_year    learning_year     @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_9534A90C40C1FEA7")
+  student          student           @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_9534A90C9BA9BF2B")
+
+  @@index([history_id], map: "IDX_41737CBF1E058452")
+  @@index([year_id], map: "IDX_41737CBF40C1FEA7")
+  @@index([studiant_id], map: "IDX_41737CBF9BA9BF2B")
+}
+
+model compta_student_waiting_gain {
+  id               Int               @id @default(autoincrement())
+  year_id          Int
+  studiant_id      Int
+  history_id       Int?
+  calculated       Decimal?          @db.Decimal(7, 2)
+  really           Decimal?          @db.Decimal(7, 2)
+  sup              Boolean?
+  univers          String?           @db.VarChar(1)
+  learning_history learning_history? @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2C2CF3BA1E058452")
+  learning_year    learning_year     @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_2C2CF3BA40C1FEA7")
+  student          student           @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_2C2CF3BA9BA9BF2B")
+
+  @@index([history_id], map: "IDX_E953BAAB1E058452")
+  @@index([year_id], map: "IDX_E953BAAB40C1FEA7")
+  @@index([studiant_id], map: "IDX_E953BAAB9BA9BF2B")
+}
+
+model compta_student_waiting_schedule {
+  id                  Int                  @id @default(autoincrement())
+  payment_id          Int?
+  year_id             Int?
+  studiant_id         Int?
+  history_id          Int?
+  date                DateTime?            @db.Date
+  amount              Decimal?             @db.Decimal(7, 2)
+  exchange            Boolean?
+  postponed           Boolean?
+  cheque_name         String?              @db.VarChar(100)
+  solded              Boolean?
+  cheque_number       String?              @db.VarChar(20)
+  comparison          Boolean?
+  sup                 Boolean?
+  imp                 Boolean?
+  imp_date            DateTime?            @db.Date
+  bankName_id         Int?
+  univers             String?              @db.VarChar(1)
+  learning_history    learning_history?    @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2EEC0CF91E058452")
+  learning_year       learning_year?       @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2EEC0CF940C1FEA7")
+  learning_payment    learning_payment?    @relation(fields: [payment_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2EEC0CF94C3A3BB")
+  compta_student_bank compta_student_bank? @relation(fields: [bankName_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2EEC0CF967FC6DB4")
+  student             student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_2EEC0CF99BA9BF2B")
+
+  @@index([history_id], map: "IDX_FAABD94A1E058452")
+  @@index([year_id], map: "IDX_FAABD94A40C1FEA7")
+  @@index([payment_id], map: "IDX_FAABD94A4C3A3BB")
+  @@index([bankName_id], map: "IDX_FAABD94A67FC6DB4")
+  @@index([studiant_id], map: "IDX_FAABD94A9BA9BF2B")
+}
+
+model learning_absence {
+  id                   Int                    @id @default(autoincrement())
+  description          String?                @db.VarChar(255)
+  code                 String?                @unique(map: "UNIQ_B2FD583A77153098") @db.VarChar(10)
+  sup                  Boolean?
+  archive_attendance   archive_attendance[]
+  archive_stat_absence archive_stat_absence[]
+  student_attendance   student_attendance[]
+  student_stat_absence student_stat_absence[]
+}
+
+model learning_agenda {
+  id                   Int                   @id @default(autoincrement())
+  groupHeader_id       Int?
+  date                 DateTime?             @db.Date
+  assessment           Boolean?
+  attendance           Boolean?
+  year_id              Int?
+  control              Boolean?
+  att_valid            Boolean?
+  present              Int?
+  percent              Decimal?              @db.Decimal(5, 2)
+  univers              String?               @db.VarChar(1)
+  learning_year        learning_year?        @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_7749003C40C1FEA7")
+  pathway_group_header pathway_group_header? @relation(fields: [groupHeader_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_7749003CEE4A4339")
+
+  @@index([year_id], map: "IDX_EA1F838E40C1FEA7")
+  @@index([groupHeader_id], map: "IDX_EA1F838E8BF89464")
+}
+
+model learning_assess_type {
+  id                     Int                      @id @default(autoincrement())
+  description            String?                  @db.VarChar(255)
+  code                   String?                  @unique(map: "UNIQ_D3B8C8D077153098") @db.VarChar(10)
+  sup                    Boolean?
+  univers                String?                  @db.VarChar(1)
+  archive_assess_pattern archive_assess_pattern[]
+  pathway_assess_pattern pathway_assess_pattern[]
+}
+
+model learning_coran_assess {
+  id                                                                                              Int                            @id @default(autoincrement())
+  sourate_number                                                                                  Int?
+  sourate_name                                                                                    String?                        @db.VarChar(50)
+  page_number                                                                                     Int?
+  pages                                                                                           Decimal?                       @db.Decimal(5, 2)
+  univers                                                                                         String?                        @db.VarChar(1)
+  archive_assessment_archive_assessment_sourateTo_idTolearning_coran_assess                       archive_assessment[]           @relation("archive_assessment_sourateTo_idTolearning_coran_assess")
+  archive_assessment_archive_assessment_sourateFrom_idTolearning_coran_assess                     archive_assessment[]           @relation("archive_assessment_sourateFrom_idTolearning_coran_assess")
+  archive_single_assessment_archive_single_assessment_sourateTo_idTolearning_coran_assess         archive_single_assessment[]    @relation("archive_single_assessment_sourateTo_idTolearning_coran_assess")
+  archive_single_assessment_archive_single_assessment_sourateFrom_idTolearning_coran_assess       archive_single_assessment[]    @relation("archive_single_assessment_sourateFrom_idTolearning_coran_assess")
+  assessment_assessment_sourateTo_idTolearning_coran_assess                                       assessment[]                   @relation("assessment_sourateTo_idTolearning_coran_assess")
+  assessment_assessment_sourateFrom_idTolearning_coran_assess                                     assessment[]                   @relation("assessment_sourateFrom_idTolearning_coran_assess")
+  assessment_single_assessment_assessment_single_assessment_sourateTo_idTolearning_coran_assess   assessment_single_assessment[] @relation("assessment_single_assessment_sourateTo_idTolearning_coran_assess")
+  assessment_single_assessment_assessment_single_assessment_sourateFrom_idTolearning_coran_assess assessment_single_assessment[] @relation("assessment_single_assessment_sourateFrom_idTolearning_coran_assess")
+}
+
+model learning_history {
+  id                              Int                               @id @default(autoincrement())
+  event                           String?                           @db.VarChar(50)
+  date                            DateTime?                         @db.DateTime(0)
+  finish                          Boolean?
+  archive_discount                archive_discount[]
+  archive_gain                    archive_gain[]
+  archive_group_content           archive_group_content[]
+  archive_schedule                archive_schedule[]
+  compta_student_discount         compta_student_discount[]
+  compta_student_gain             compta_student_gain[]
+  compta_student_schedule         compta_student_schedule[]
+  compta_student_waiting_discount compta_student_waiting_discount[]
+  compta_student_waiting_gain     compta_student_waiting_gain[]
+  compta_student_waiting_schedule compta_student_waiting_schedule[]
+  pathway_group_content           pathway_group_content[]
+  student                         student[]
+}
+
+model learning_inactivity {
+  id            Int           @id @default(autoincrement())
+  year_id       Int
+  description   String?       @db.VarChar(255)
+  start_date    DateTime?     @db.Date
+  end_date      DateTime?     @db.Date
+  sup           Boolean?
+  learning_year learning_year @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_76F4229C40C1FEA7")
+
+  @@index([year_id], map: "IDX_40A3147F40C1FEA7")
+}
+
+model learning_payment {
+  id                              Int                               @id @default(autoincrement())
+  description                     String?                           @db.VarChar(255)
+  code                            String?                           @unique(map: "UNIQ_A98F3CFE77153098") @db.VarChar(10)
+  hidden                          Boolean?
+  sup                             Boolean?
+  archive_discount                archive_discount[]
+  archive_schedule                archive_schedule[]
+  compta_centre_receipts          compta_centre_receipts[]
+  compta_centre_spanding          compta_centre_spanding[]
+  compta_student_discount         compta_student_discount[]
+  compta_student_schedule         compta_student_schedule[]
+  compta_student_waiting_schedule compta_student_waiting_schedule[]
+}
+
+model learning_pricing {
+  id                    Int                    @id @default(autoincrement())
+  weekly_duration       Int?
+  normal_price          Decimal?               @db.Decimal(7, 2)
+  reduct_price          Decimal?               @db.Decimal(7, 2)
+  sup                   Boolean?
+  duration_input        Decimal?               @db.Decimal(5, 2)
+  pricingType_id        Int?
+  univers               String?                @db.VarChar(1)
+  learning_pricing_type learning_pricing_type? @relation(fields: [pricingType_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4A490E3695113B2")
+
+  @@index([pricingType_id], map: "IDX_215614C0695113B2")
+}
+
+model learning_pricing_type {
+  id                   Int                    @id @default(autoincrement())
+  description          String                 @db.VarChar(255)
+  archive_group_header archive_group_header[]
+  learning_pricing     learning_pricing[]
+  pathway_group_header pathway_group_header[]
+}
+
+model learning_year {
+  id                              Int                               @id @default(autoincrement())
+  description                     String?                           @db.VarChar(255)
+  archive                         Boolean?
+  working_a                       Boolean?
+  start_date                      DateTime                          @db.Date
+  end_start                       DateTime                          @db.Date
+  subscribtion_a                  Boolean?
+  mail_to                         Boolean?
+  s1_start_date                   DateTime                          @db.Date
+  s1_end_start                    DateTime                          @db.Date
+  s2_start_date                   DateTime                          @db.Date
+  s2_end_start                    DateTime                          @db.Date
+  sort                            Int?
+  subscribtion_c                  Boolean?
+  working_c                       Boolean?
+  admin_utilisateur               admin_utilisateur[]
+  archive_agenda                  archive_agenda[]
+  archive_assess_header           archive_assess_header[]
+  archive_assess_pattern          archive_assess_pattern[]
+  archive_discount                archive_discount[]
+  archive_due_studiant            archive_due_studiant[]
+  archive_gain                    archive_gain[]
+  archive_group_header            archive_group_header[]
+  archive_module                  archive_module[]
+  archive_schedule                archive_schedule[]
+  archive_single_assessment       archive_single_assessment[]
+  archive_stat_absence            archive_stat_absence[]
+  archive_transcript              archive_transcript[]
+  assessment_header               assessment_header[]
+  assessment_single_assessment    assessment_single_assessment[]
+  assessment_transcript           assessment_transcript[]
+  compta_centre_receipts          compta_centre_receipts[]
+  compta_centre_spanding          compta_centre_spanding[]
+  compta_student_discount         compta_student_discount[]
+  compta_student_due_studiant     compta_student_due_studiant[]
+  compta_student_gain             compta_student_gain[]
+  compta_student_schedule         compta_student_schedule[]
+  compta_student_waiting_discount compta_student_waiting_discount[]
+  compta_student_waiting_gain     compta_student_waiting_gain[]
+  compta_student_waiting_schedule compta_student_waiting_schedule[]
+  learning_agenda                 learning_agenda[]
+  learning_inactivity             learning_inactivity[]
+  pathway_assess_pattern          pathway_assess_pattern[]
+  pathway_group_header            pathway_group_header[]
+  pathway_module                  pathway_module[]
+  student                         student[]
+  student_stat_absence            student_stat_absence[]
+}
+
+model note {
+  id                Int                @id @default(autoincrement())
+  user_id           Int?
+  title             String?            @db.VarChar(255)
+  description       String?            @db.LongText
+  date              DateTime?          @db.Date
+  deleted           Boolean?
+  left_pos          Int?
+  top_pos           Int?
+  bg_color          String?            @db.VarChar(50)
+  admin_utilisateur admin_utilisateur? @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_CFBDFA14A76ED395")
+
+  @@index([user_id], map: "IDX_CFBDFA14A76ED395")
+}
+
+model pathway_assess_granding {
+  id                           Int                            @id @default(autoincrement())
+  description                  String?                        @db.VarChar(255)
+  goal                         Boolean?
+  granding1                    Decimal?                       @db.Decimal(5, 2)
+  granding2                    Decimal?                       @db.Decimal(5, 2)
+  granding3                    Decimal?                       @db.Decimal(5, 2)
+  granding4                    Decimal?                       @db.Decimal(5, 2)
+  univers                      String?                        @db.VarChar(1)
+  archive_assess_header        archive_assess_header[]
+  archive_assessment           archive_assessment[]
+  archive_single_assessment    archive_single_assessment[]
+  assessment                   assessment[]
+  assessment_header            assessment_header[]
+  assessment_single_assessment assessment_single_assessment[]
+}
+
+model pathway_assess_pattern {
+  id                           Int                            @id @default(autoincrement())
+  year_id                      Int
+  description                  String?                        @db.VarChar(255)
+  start_date                   DateTime?                      @db.Date
+  end_date                     DateTime?                      @db.Date
+  factor                       Int?
+  assessType_id                Int?
+  code                         String?                        @db.VarChar(10)
+  admin                        Boolean?
+  department_id                Int?
+  univers                      String?                        @db.VarChar(1)
+  target                       String?                        @db.VarChar(5)
+  assessment_header            assessment_header[]
+  assessment_single_assessment assessment_single_assessment[]
+  learning_year                learning_year                  @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_95CDCFC840C1FEA7")
+  learning_assess_type         learning_assess_type?          @relation(fields: [assessType_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_95CDCFC8A3A7EE89")
+  pathway_department           pathway_department?            @relation(fields: [department_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_95CDCFC8AE80F5DF")
+  pathway_pattern_module       pathway_pattern_module[]
+
+  @@index([year_id], map: "IDX_5ACA1AB940C1FEA7")
+  @@index([assessType_id], map: "IDX_5ACA1AB9A3A7EE89")
+  @@index([department_id], map: "IDX_5ACA1AB9AE80F5DF")
+}
+
+model pathway_classroom {
+  id                   Int                    @id @default(autoincrement())
+  description          String?                @db.VarChar(255)
+  sup                  Boolean?
+  archive_group_header archive_group_header[]
+  pathway_group_header pathway_group_header[]
+}
+
+model pathway_department {
+  id                         Int                          @id @default(autoincrement())
+  pathway_id                 Int
+  description                String?                      @db.VarChar(255)
+  code                       String?                      @db.VarChar(10)
+  sup                        Boolean?
+  dash                       Boolean?
+  univers                    String?                      @db.VarChar(1)
+  archive_assess_pattern     archive_assess_pattern[]
+  archive_module             archive_module[]
+  pathway_assess_pattern     pathway_assess_pattern[]
+  pathway_pathway            pathway_pathway              @relation(fields: [pathway_id], references: [id], onUpdate: Restrict, map: "FK_286608DFF3DA7551")
+  pathway_level              pathway_level[]
+  pathway_module             pathway_module[]
+  pathway_teacher_department pathway_teacher_department[]
+
+  @@index([pathway_id], map: "IDX_FC25B097F3DA7551")
+}
+
+model pathway_group_content {
+  id                                                                              Int                   @id @default(autoincrement())
+  groupHeader_id                                                                  Int
+  studiant_id                                                                     Int
+  abort                                                                           Boolean?
+  next_level                                                                      Boolean?
+  swap                                                                            Boolean?
+  sup                                                                             Boolean?
+  history_id                                                                      Int?
+  date_abort                                                                      DateTime?             @db.DateTime(0)
+  resignation                                                                     Boolean?
+  entry_date                                                                      DateTime?             @db.DateTime(0)
+  motive                                                                          String?               @db.VarChar(255)
+  swapToGroup_id                                                                  Int?
+  univers                                                                         String?               @db.VarChar(1)
+  user                                                                            String?               @db.VarChar(100)
+  appreciation                                                                    String?               @db.LongText
+  learning_history                                                                learning_history?     @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_5AD9680A1E058452")
+  student                                                                         student               @relation(fields: [studiant_id], references: [id], onUpdate: Restrict, map: "FK_5AD9680A9BA9BF2B")
+  pathway_group_header_pathway_group_content_swapToGroup_idTopathway_group_header pathway_group_header? @relation("pathway_group_content_swapToGroup_idTopathway_group_header", fields: [swapToGroup_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_5AD9680A9CC2EB2E")
+  pathway_group_header_pathway_group_content_groupHeader_idTopathway_group_header pathway_group_header  @relation("pathway_group_content_groupHeader_idTopathway_group_header", fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_5AD9680AEE4A4339")
+
+  @@index([history_id], map: "IDX_E799803C1E058452")
+  @@index([groupHeader_id], map: "IDX_E799803C8BF89464")
+  @@index([studiant_id], map: "IDX_E799803C9BA9BF2B")
+  @@index([swapToGroup_id], map: "IDX_E799803C9CC2EB2E")
+}
+
+model pathway_group_header {
+  id                                                                               Int                             @id @default(autoincrement())
+  year_id                                                                          Int
+  classroom_id                                                                     Int
+  slot_id                                                                          Int
+  level_id                                                                         Int
+  description                                                                      String?                         @db.VarChar(255)
+  code                                                                             String?                         @db.VarChar(20)
+  max_male                                                                         Int?
+  max_female                                                                       Int?
+  nb_m_studiant                                                                    Int?
+  nb_f_studiant                                                                    Int?
+  sup                                                                              Boolean?
+  sel                                                                              Boolean?
+  valid                                                                            Boolean?
+  dash                                                                             Boolean?
+  mail_to                                                                          Boolean?
+  max_male_wait                                                                    Int?
+  max_female_wait                                                                  Int?
+  nb_m_studiant_wait                                                               Int?
+  nb_f_studiant_wait                                                               Int?
+  pricingType_id                                                                   Int?
+  module_id                                                                        Int?
+  univers                                                                          String?                         @db.VarChar(1)
+  short_description                                                                String?                         @db.VarChar(255)
+  auto_valid                                                                       Boolean?
+  next_level                                                                       Boolean?
+  next_required                                                                    Boolean?
+  assessment_header                                                                assessment_header[]
+  assessment_single_assessment                                                     assessment_single_assessment[]
+  assessment_transcript_content                                                    assessment_transcript_content[]
+  learning_agenda                                                                  learning_agenda[]
+  pathway_group_content_pathway_group_content_swapToGroup_idTopathway_group_header pathway_group_content[]         @relation("pathway_group_content_swapToGroup_idTopathway_group_header")
+  pathway_group_content_pathway_group_content_groupHeader_idTopathway_group_header pathway_group_content[]         @relation("pathway_group_content_groupHeader_idTopathway_group_header")
+  learning_year                                                                    learning_year                   @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_A3EE66A740C1FEA7")
+  pathway_slot                                                                     pathway_slot                    @relation(fields: [slot_id], references: [id], onUpdate: Restrict, map: "FK_A3EE66A759E5119C")
+  pathway_level                                                                    pathway_level                   @relation(fields: [level_id], references: [id], onUpdate: Restrict, map: "FK_A3EE66A75FB14BA7")
+  pathway_classroom                                                                pathway_classroom               @relation(fields: [classroom_id], references: [id], onUpdate: Restrict, map: "FK_A3EE66A76278D5A8")
+  learning_pricing_type                                                            learning_pricing_type?          @relation(fields: [pricingType_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_A3EE66A7695113B2")
+  pathway_group_module_teacher                                                     pathway_group_module_teacher[]
+  pathway_group_multiple                                                           pathway_group_multiple[]
+  pathway_group_number                                                             pathway_group_number[]
+  student_attendance                                                               student_attendance[]
+  student_stat_absence                                                             student_stat_absence[]
+  student_subscrib_group                                                           student_subscrib_group[]
+  student_subscrib_waiting                                                         student_subscrib_waiting[]
+  student_waiting_list                                                             student_waiting_list[]
+
+  @@index([year_id], map: "IDX_5EF44C5740C1FEA7")
+  @@index([slot_id], map: "IDX_5EF44C5759E5119C")
+  @@index([level_id], map: "IDX_5EF44C575FB14BA7")
+  @@index([classroom_id], map: "IDX_5EF44C576278D5A8")
+  @@index([pricingType_id], map: "IDX_5EF44C57695113B2")
+}
+
+model pathway_group_module_teacher {
+  id                   Int                   @id @default(autoincrement())
+  groupHeader_id       Int?
+  module_id            Int?
+  teacher_id           Int?
+  sup                  Boolean?
+  univers              String?               @db.VarChar(1)
+  pathway_teacher      pathway_teacher?      @relation(fields: [teacher_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_EA0A2F7441807E1D")
+  pathway_module       pathway_module?       @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_EA0A2F74AFC2B591")
+  pathway_group_header pathway_group_header? @relation(fields: [groupHeader_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_EA0A2F74EE4A4339")
+
+  @@index([teacher_id], map: "IDX_6C45E8FD41807E1D")
+  @@index([groupHeader_id], map: "IDX_6C45E8FD8BF89464")
+  @@index([module_id], map: "IDX_6C45E8FDAFC2B591")
+}
+
+model pathway_group_multiple {
+  id                   Int                   @id @default(autoincrement())
+  module_id            Int?
+  slot_id              Int?
+  sup                  Boolean?
+  day                  String?               @db.VarChar(2)
+  groupHeader_id       Int?
+  pathway_slot         pathway_slot?         @relation(fields: [slot_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4ACC930E59E5119C")
+  pathway_group_header pathway_group_header? @relation(fields: [groupHeader_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4ACC930E8BF89464")
+  pathway_module       pathway_module?       @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_4ACC930EAFC2B591")
+
+  @@index([slot_id], map: "IDX_85CB467F59E5119C")
+  @@index([groupHeader_id], map: "IDX_85CB467F8BF89464")
+  @@index([module_id], map: "IDX_85CB467FAFC2B591")
+}
+
+model pathway_group_number {
+  id                   Int                  @id @default(autoincrement())
+  date                 DateTime?            @db.DateTime(0)
+  numberM              Int?
+  numberF              Int?
+  groupHeader_id       Int
+  univers              String?              @db.VarChar(1)
+  pathway_group_header pathway_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_5B0CD1328BF89464")
+
+  @@index([groupHeader_id], map: "IDX_A616FBC28BF89464")
+}
+
+model pathway_level {
+  id                   Int                    @id @default(autoincrement())
+  department_id        Int
+  description          String?                @db.VarChar(255)
+  code                 String?                @db.VarChar(10)
+  sexe                 String?                @db.VarChar(1)
+  sup                  Boolean?
+  dash                 Boolean?
+  hierarchy            Int?
+  univers              String?                @db.VarChar(1)
+  archive_group_header archive_group_header[]
+  pathway_group_header pathway_group_header[]
+  pathway_department   pathway_department     @relation(fields: [department_id], references: [id], onUpdate: Restrict, map: "FK_E08C9AACAE80F5DF")
+
+  @@index([department_id], map: "IDX_DADF6579AE80F5DF")
+}
+
+model pathway_module {
+  id                            Int                             @id @default(autoincrement())
+  description                   String?                         @db.VarChar(255)
+  code                          String?                         @db.VarChar(10)
+  sup                           Boolean?
+  department_id                 Int
+  start_date                    DateTime?                       @db.Date
+  end_date                      DateTime?                       @db.Date
+  sel                           Boolean?
+  year_id                       Int
+  close                         Boolean?
+  univers                       String?                         @db.VarChar(1)
+  assessment_header             assessment_header[]
+  assessment_single_assessment  assessment_single_assessment[]
+  assessment_transcript         assessment_transcript[]
+  assessment_transcript_content assessment_transcript_content[]
+  pathway_group_module_teacher  pathway_group_module_teacher[]
+  pathway_group_multiple        pathway_group_multiple[]
+  learning_year                 learning_year                   @relation(fields: [year_id], references: [id], onUpdate: Restrict, map: "FK_5780EE6340C1FEA7")
+  pathway_department            pathway_department              @relation(fields: [department_id], references: [id], onUpdate: Restrict, map: "FK_5780EE63AE80F5DF")
+  pathway_module_teacher        pathway_module_teacher[]
+  pathway_pattern_module        pathway_pattern_module[]
+  student_attendance            student_attendance[]
+
+  @@index([year_id], map: "IDX_A1039BC740C1FEA7")
+  @@index([department_id], map: "IDX_A1039BC7AE80F5DF")
+}
+
+model pathway_module_teacher {
+  module_id       Int
+  teacher_id      Int
+  pathway_teacher pathway_teacher @relation(fields: [teacher_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_1B8D98CC41807E1D")
+  pathway_module  pathway_module  @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_1B8D98CCAFC2B591")
+
+  @@id([module_id, teacher_id])
+  @@index([teacher_id], map: "IDX_92C1EFC841807E1D")
+  @@index([module_id], map: "IDX_92C1EFC8AFC2B591")
+}
+
+model pathway_pathway {
+  id                 Int                  @id @default(autoincrement())
+  description        String?              @db.VarChar(255)
+  code               String?              @unique(map: "UNIQ_74F57FB677153098") @db.VarChar(10)
+  sup                Boolean?
+  dash               Boolean?
+  univers            String?              @db.VarChar(1)
+  pathway_department pathway_department[]
+  pathway_slot       pathway_slot[]
+}
+
+model pathway_pattern_module {
+  assesspattern_id       Int
+  module_id              Int
+  pathway_module         pathway_module         @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_CF389180AFC2B591")
+  pathway_assess_pattern pathway_assess_pattern @relation(fields: [assesspattern_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_CF389180C9CBB5CA")
+
+  @@id([assesspattern_id, module_id])
+  @@index([module_id], map: "IDX_4CCBAD9CAFC2B591")
+  @@index([assesspattern_id], map: "IDX_4CCBAD9CC9CBB5CA")
+}
+
+model pathway_slot {
+  id                     Int                      @id @default(autoincrement())
+  description            String?                  @db.VarChar(255)
+  code                   String?                  @db.VarChar(10)
+  day                    String?                  @db.VarChar(10)
+  start_time             DateTime?                @db.Time(0)
+  end_time               DateTime?                @db.Time(0)
+  sup                    Boolean?
+  duration_input         Decimal?                 @db.Decimal(5, 2)
+  weekly_duration        Int?
+  sort                   Int?
+  dash                   Boolean?
+  split_slot             Boolean?
+  day2                   String?                  @db.VarChar(10)
+  duration_input2        Decimal?                 @db.Decimal(5, 2)
+  start_time2            DateTime?                @db.Time(0)
+  end_time2              DateTime?                @db.Time(0)
+  pathway_id             Int
+  univers                String?                  @db.VarChar(1)
+  split_slot_2           Boolean?
+  day3                   String?                  @db.VarChar(10)
+  duration_input3        Decimal?                 @db.Decimal(5, 2)
+  start_time3            DateTime?                @db.Time(0)
+  end_time3              DateTime?                @db.Time(0)
+  archive_group_header   archive_group_header[]
+  archive_group_multiple archive_group_multiple[]
+  pathway_group_header   pathway_group_header[]
+  pathway_group_multiple pathway_group_multiple[]
+  pathway_pathway        pathway_pathway          @relation(fields: [pathway_id], references: [id], onUpdate: Restrict, map: "FK_A00237ECF3DA7551")
+
+  @@index([pathway_id], map: "IDX_46AC2C8DF3DA7551")
+}
+
+model pathway_teacher {
+  id                                                                   Int                            @id @default(autoincrement())
+  contact_id                                                           Int?
+  last_name                                                            String?                        @db.VarChar(70)
+  first_name                                                           String?                        @db.VarChar(70)
+  adresse                                                              String?                        @db.VarChar(255)
+  job                                                                  String?                        @db.VarChar(255)
+  sup                                                                  Boolean?
+  sel                                                                  Boolean?
+  zip                                                                  String?                        @db.VarChar(10)
+  city                                                                 String?                        @db.VarChar(100)
+  sexe                                                                 String?                        @db.VarChar(1)
+  univers                                                              String?                        @db.VarChar(1)
+  admin_utilisateur_admin_utilisateur_teacher_idTopathway_teacher      admin_utilisateur[]            @relation("admin_utilisateur_teacher_idTopathway_teacher")
+  admin_utilisateur_admin_utilisateur_teacherChild_idTopathway_teacher admin_utilisateur[]            @relation("admin_utilisateur_teacherChild_idTopathway_teacher")
+  archive_group_module_teacher                                         archive_group_module_teacher[]
+  archive_module_teacher                                               archive_module_teacher[]
+  pathway_group_module_teacher                                         pathway_group_module_teacher[]
+  pathway_module_teacher                                               pathway_module_teacher[]
+  admin_contact                                                        admin_contact?                 @relation(fields: [contact_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_51A39A05E7A1254A")
+  pathway_teacher_department                                           pathway_teacher_department[]
+
+  @@index([contact_id], map: "IDX_80EE7E81E7A1254A")
+}
+
+model pathway_teacher_department {
+  teacher_id         Int
+  department_id      Int
+  pathway_teacher    pathway_teacher    @relation(fields: [teacher_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_4702432A41807E1D")
+  pathway_department pathway_department @relation(fields: [department_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_4702432AAE80F5DF")
+
+  @@id([teacher_id, department_id])
+  @@index([teacher_id], map: "IDX_5176912541807E1D")
+  @@index([department_id], map: "IDX_51769125AE80F5DF")
+}
+
+model shatibi_events {
+  id             Int       @id @default(autoincrement())
+  title          String?   @db.VarChar(255)
+  url            String?   @db.VarChar(255)
+  bg_color       String?   @db.VarChar(50)
+  fg_color       String?   @db.VarChar(50)
+  start_datetime DateTime? @db.DateTime(0)
+  end_datetime   DateTime? @db.DateTime(0)
+  allDay         Boolean?
+  user           String?   @db.VarChar(255)
+  description    String?   @db.LongText
+}
+
+model student {
+  id                              Int                               @id @default(autoincrement())
+  contact_id                      Int?
+  last_name                       String?                           @db.VarChar(100)
+  first_name                      String?                           @db.VarChar(100)
+  sexe                            String?                           @db.VarChar(1)
+  birthday                        DateTime                          @db.Date
+  adresse                         String?                           @db.VarChar(255)
+  photo_url                       String?                           @db.VarChar(255)
+  pre_sub_date                    DateTime?                         @db.Date
+  subscrib_date                   DateTime?                         @db.Date
+  qualifications                  String?                           @db.VarChar(255)
+  job                             String?                           @db.VarChar(255)
+  pricing                         String?                           @db.VarChar(10)
+  family_status                   String?                           @db.VarChar(50)
+  know_centre                     String?                           @db.VarChar(255)
+  in_assoc                        Boolean?
+  association                     String?                           @db.VarChar(255)
+  abort                           Boolean?
+  comment                         String?                           @db.VarChar(255)
+  zip                             String?                           @db.VarChar(10)
+  city                            String?                           @db.VarChar(100)
+  extension                       String?                           @db.VarChar(5)
+  history_id                      Int?
+  diploma                         String?                           @db.VarChar(100)
+  cause                           String?                           @db.VarChar(255)
+  dash_city                       Boolean?
+  lastSubYear_id                  Int?
+  archive                         Boolean?
+  resignation                     Boolean?
+  total                           Boolean?
+  compta_comment                  String?                           @db.VarChar(255)
+  ask_compta_control              Boolean?
+  univers                         String?                           @db.VarChar(1)
+  school_level                    String?                           @db.VarChar(255)
+  responsible_last_name           String?                           @db.VarChar(100)
+  responsible_first_name          String?                           @db.VarChar(100)
+  responsible_quality             String?                           @db.VarChar(10)
+  other_quality                   String?                           @db.VarChar(255)
+  particularity                   String?                           @db.VarChar(10)
+  other_particularity             String?                           @db.VarChar(255)
+  archive_assessment              archive_assessment[]
+  archive_attendance              archive_attendance[]
+  archive_discount                archive_discount[]
+  archive_due_studiant            archive_due_studiant[]
+  archive_gain                    archive_gain[]
+  archive_group_content           archive_group_content[]
+  archive_schedule                archive_schedule[]
+  archive_single_assessment       archive_single_assessment[]
+  archive_stat_absence            archive_stat_absence[]
+  archive_transcript              archive_transcript[]
+  archive_waiting_list            archive_waiting_list[]
+  assessment                      assessment[]
+  assessment_single_assessment    assessment_single_assessment[]
+  assessment_transcript           assessment_transcript[]
+  compta_student_discount         compta_student_discount[]
+  compta_student_due_studiant     compta_student_due_studiant[]
+  compta_student_gain             compta_student_gain[]
+  compta_student_schedule         compta_student_schedule[]
+  compta_student_waiting_discount compta_student_waiting_discount[]
+  compta_student_waiting_gain     compta_student_waiting_gain[]
+  compta_student_waiting_schedule compta_student_waiting_schedule[]
+  pathway_group_content           pathway_group_content[]
+  learning_history                learning_history?                 @relation(fields: [history_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_75F9B1471E058452")
+  learning_year                   learning_year?                    @relation(fields: [lastSubYear_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_75F9B147D110123F")
+  admin_contact                   admin_contact?                    @relation(fields: [contact_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_75F9B147E7A1254A")
+  student_attendance              student_attendance[]
+  student_stat_absence            student_stat_absence[]
+  student_waiting_list            student_waiting_list[]
+
+  @@index([history_id], map: "IDX_B723AF331E058452")
+  @@index([lastSubYear_id], map: "IDX_B723AF33D110123F")
+  @@index([contact_id], map: "IDX_B723AF33E7A1254A")
+}
+
+model student_abort_motive {
+  id          Int     @id @default(autoincrement())
+  description String? @db.VarChar(255)
+}
+
+model student_attendance {
+  id                   Int                  @id @default(autoincrement())
+  absence_id           Int?
+  contact_id           Int?
+  date                 DateTime?            @db.Date
+  present              Boolean?
+  comment              String?              @db.VarChar(255)
+  evidence             String?              @db.VarChar(255)
+  guest                Boolean?
+  groupHeader_id       Int
+  studiant_id          Int?
+  mail                 Boolean?
+  abort                Boolean?
+  resignation          Boolean?
+  swap                 Boolean?
+  univers              String?              @db.VarChar(1)
+  module_id            Int?
+  learning_absence     learning_absence?    @relation(fields: [absence_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_E43E43AA2DFF238F")
+  pathway_group_header pathway_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_E43E43AA8BF89464")
+  student              student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_E43E43AA9BA9BF2B")
+  pathway_module       pathway_module?      @relation(fields: [module_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_E43E43AAAFC2B591")
+  admin_contact        admin_contact?       @relation(fields: [contact_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_E43E43AAE7A1254A")
+
+  @@index([absence_id], map: "IDX_803CE0702DFF238F")
+  @@index([groupHeader_id], map: "IDX_803CE0708BF89464")
+  @@index([studiant_id], map: "IDX_803CE0709BA9BF2B")
+  @@index([module_id], map: "IDX_803CE070AFC2B591")
+  @@index([contact_id], map: "IDX_803CE070E7A1254A")
+}
+
+model student_dash_days {
+  id        Int      @id @default(autoincrement())
+  monday    Boolean?
+  tuesday   Boolean?
+  wednesday Boolean?
+  thursday  Boolean?
+  friday    Boolean?
+  saturday  Boolean?
+  sunday    Boolean?
+  name      String?  @db.VarChar(10)
+  mon_slot  Boolean?
+  tue_slot  Boolean?
+  wed_slot  Boolean?
+  thu_slot  Boolean?
+  fri_slot  Boolean?
+  sat_slot  Boolean?
+  sun_slot  Boolean?
+}
+
+model student_dash_who {
+  id            Int      @id @default(autoincrement())
+  name          String?  @db.VarChar(20)
+  inf_20        Boolean?
+  between_20_29 Boolean?
+  between_30_39 Boolean?
+  sup_40        Boolean?
+  av_bac        Boolean?
+  bac           Boolean?
+  bts           Boolean?
+  license       Boolean?
+  master        Boolean?
+  doctor        Boolean?
+  male          Boolean?
+  female        Boolean?
+}
+
+model student_pre_subscrib {
+  id                 Int       @id @default(autoincrement())
+  last_name          String?   @db.VarChar(100)
+  mail               String?   @db.VarChar(255)
+  mobile             String?   @db.VarChar(20)
+  rdv_object         String?   @db.VarChar(100)
+  studiant_past_year String?   @db.VarChar(3)
+  pre_subscrib_date  DateTime? @db.DateTime(0)
+  rdv_date           DateTime? @db.DateTime(0)
+  sel                Boolean?
+  sup                Boolean?
+  subscib            Boolean?
+  first_name         String?   @db.VarChar(100)
+  gender             String?   @db.VarChar(1)
+  birth_date         DateTime? @db.Date
+  adresse            String?   @db.VarChar(200)
+  zip                String?   @db.VarChar(10)
+  city               String?   @db.VarChar(100)
+  wp_post_id         BigInt?
+  univers            String?   @db.VarChar(1)
+}
+
+model student_stat_absence {
+  id                   Int                  @id @default(autoincrement())
+  studiant_id          Int?
+  year_id              Int?
+  startDate            DateTime?            @db.Date
+  endDate              DateTime?            @db.Date
+  nbAbs                Int?
+  groupHeader_id       Int
+  absence_id           Int?
+  learning_absence     learning_absence?    @relation(fields: [absence_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_92A097502DFF238F")
+  learning_year        learning_year?       @relation(fields: [year_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_92A0975040C1FEA7")
+  pathway_group_header pathway_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_92A097508BF89464")
+  student              student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_92A097509BA9BF2B")
+
+  @@index([absence_id], map: "IDX_B7E26E72DFF238F")
+  @@index([year_id], map: "IDX_B7E26E740C1FEA7")
+  @@index([groupHeader_id], map: "IDX_B7E26E78BF89464")
+  @@index([studiant_id], map: "IDX_B7E26E79BA9BF2B")
+}
+
+model student_subscrib_group {
+  id                   Int                  @id @default(autoincrement())
+  gift                 Boolean?
+  user                 String?              @db.VarChar(50)
+  groupHeader_id       Int
+  waiting              Boolean?
+  univers              String?              @db.VarChar(1)
+  pathway_group_header pathway_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_DF2902918BF89464")
+
+  @@index([groupHeader_id], map: "IDX_35177F968BF89464")
+}
+
+model student_subscrib_waiting {
+  id                   Int                  @id @default(autoincrement())
+  subscrib             Boolean?
+  user                 String?              @db.VarChar(50)
+  groupHeader_id       Int
+  univers              String?              @db.VarChar(1)
+  pathway_group_header pathway_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_29B243B28BF89464")
+
+  @@index([groupHeader_id], map: "IDX_484732CA8BF89464")
+}
+
+model student_waiting_list {
+  id                   Int                  @id @default(autoincrement())
+  studiant_id          Int?
+  inscription_date     DateTime             @db.Date
+  hierarchy            Int
+  comment              String?              @db.LongText
+  groupHeader_id       Int
+  internal             Boolean?
+  compta               Boolean?
+  multi                Boolean?
+  univers              String?              @db.VarChar(1)
+  pathway_group_header pathway_group_header @relation(fields: [groupHeader_id], references: [id], onUpdate: Restrict, map: "FK_49259C298BF89464")
+  student              student?             @relation(fields: [studiant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_49259C299BA9BF2B")
+
+  @@index([groupHeader_id], map: "IDX_7D2D27EC8BF89464")
+  @@index([studiant_id], map: "IDX_7D2D27EC9BA9BF2B")
+}
+
+model task {
+  id                Int                @id @default(autoincrement())
+  user_id           Int?
+  title             String?            @db.VarChar(255)
+  description       String?            @db.LongText
+  date              DateTime?          @db.Date
+  no_delete         Boolean?
+  done              Boolean?
+  deleted           Boolean?
+  clone_code        String?            @db.VarChar(12)
+  left_pos          Int?
+  top_pos           Int?
+  admin_utilisateur admin_utilisateur? @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_527EDB25A76ED395")
+
+  @@index([user_id], map: "IDX_527EDB25A76ED395")
+}
