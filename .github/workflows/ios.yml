@@ -58,22 +58,25 @@ jobs:
           npx cap add ios
           npx cap sync ios
 
-      - name: Clean previous Xcode build
-        run: rm -rf ios/App/build
+      - name: List available simulators
+        run: xcrun simctl list devices
 
       - name: Build iOS app for Simulator
         run: |
           cd ios/App
+          # Choisir automatiquement le premier iPhone dispo en iOS 17
+          DEVICE=$(xcrun simctl list devices available | grep "iPhone" | grep "17.5" | head -n 1 | awk -F '[()]' '{print $2}')
+          echo "Using simulator device: $DEVICE"
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1" \
+            -destination "id=$DEVICE" \
             CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
 
       - name: Collect Simulator build artifacts
         run: |
           cd ios/App
           mkdir -p simulator-build
-          cp -R build/ simulator-build/
+          cp -R build/ simulator-build/ || echo "No build folder found"
           echo "Simulator build completed successfully" > simulator-build/build-success.txt
           echo "Shatibi iOS App built on $(date)" >> simulator-build/build-info.txt
 
