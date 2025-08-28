@@ -1,16 +1,28 @@
 import { CapacitorConfig } from "@capacitor/cli";
-
 const config: CapacitorConfig = {
-  appId: "com.shatibi.app",
+  appId: "com.basmakasmi.shatibi",
   appName: "Shatibi",
   webDir: "build-mobile",
+  server: {
+    allowNavigation: [
+      "https://staging.base-shatibi.bvb-software.fr",
+      "https://base-shatibi.bvb-software.fr",
+      "https://base-shatibi.iela.fr",
+      "*",
+    ],
+    cleartext: true,
+    androidScheme: "https",
+    iosScheme: "capacitor",
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
       backgroundColor: "#FFFFFF",
       showSpinner: false,
     },
+    CapacitorHttp: {
+      enabled: true,
+    },
   },
 };
-
 export default config;

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export', // COMMENTEZ CETTE LIGNE
+  output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true,
@@ -10,6 +10,11 @@ const nextConfig = {
     missingSuspenseWithCSRBailout: false,
   },
   reactStrictMode: true,
+  // Ignorer les routes API pour l'export
+  async generateBuildId() {
+    return 'static-export'
+  },
+  // Ou essayer cette config alternative
+  distDir: 'out'
 };
-
 module.exports = nextConfig;

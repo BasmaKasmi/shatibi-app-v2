@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
+import { setStoredToken, removeStoredToken } from "@/lib/backend-api";
 import {
   getUserInfo,
   login,
@@ -50,7 +51,8 @@ const LoginPage = () => {
   const { mutate } = useMutation<LoginResponse, Error, LoginCredentials>({
     mutationFn: login,
     onSuccess: async (data) => {
-      Cookie.set(ACCESS_TOKEN_COOKIE_NAME, data.token);
+      setStoredToken(ACCESS_TOKEN_COOKIE_NAME, data.token);
+
       const username = watch("username");
       setLogin(username);
 
@@ -103,7 +105,7 @@ const LoginPage = () => {
     } else {
       setTeacherId(null);
     }
-    Cookie.remove(ACCESS_TOKEN_COOKIE_NAME);
+    removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
 
     mutate(data);
   };

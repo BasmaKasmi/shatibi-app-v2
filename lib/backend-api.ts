@@ -1,5 +1,29 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { Capacitor } from "@capacitor/core";
+
+const getStoredToken = (key: string): string | null => {
+  if (Capacitor.isNativePlatform()) {
+    return localStorage.getItem(key);
+  }
+  return Cookies.get(key) || null;
+};
+
+const setStoredToken = (key: string, value: string): void => {
+  if (Capacitor.isNativePlatform()) {
+    localStorage.setItem(key, value);
+  } else {
+    Cookies.set(key, value);
+  }
+};
+
+const removeStoredToken = (key: string): void => {
+  if (Capacitor.isNativePlatform()) {
+    localStorage.removeItem(key);
+  } else {
+    Cookies.remove(key);
+  }
+};
 
 const BackendApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -61,7 +85,7 @@ const isStudentRoute = (url: string | undefined): boolean => {
 
 export const checkIfUserIsStudent = (): boolean => {
   if (typeof window !== "undefined") {
-    const hasTeacherToken = !!Cookies.get(ACCESS_TOKEN_COOKIE_NAME);
+    const hasTeacherToken = !!getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
     const hasStudentToken = !!localStorage.getItem("token");
 
     if (hasStudentToken && !hasTeacherToken) {
@@ -102,7 +126,7 @@ export const checkIfUserIsStudent = (): boolean => {
   if (
     currentPath === "/home" &&
     typeof window !== "undefined" &&
-    Cookies.get(ACCESS_TOKEN_COOKIE_NAME)
+    getStoredToken(ACCESS_TOKEN_COOKIE_NAME)
   ) {
     return false;
   }
@@ -138,7 +162,7 @@ export const checkIfUserIsStudent = (): boolean => {
   }
 
   if (typeof window !== "undefined") {
-    return !Cookies.get(ACCESS_TOKEN_COOKIE_NAME);
+    return !getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
   }
 
   return false;
@@ -149,7 +173,10 @@ export const cleanupTokens = (): void => {
 
   const currentPath = window.location.pathname;
 
-  if (localStorage.getItem("token") && Cookies.get(ACCESS_TOKEN_COOKIE_NAME)) {
+  if (
+    localStorage.getItem("token") &&
+    getStoredToken(ACCESS_TOKEN_COOKIE_NAME)
+  ) {
     if (
       currentPath.startsWith("/student") ||
       currentPath.startsWith("/student-") ||
@@ -162,8 +189,8 @@ export const cleanupTokens = (): void => {
       console.log(
         "Nettoyage: Suppression du token enseignant pour un étudiant"
       );
-      Cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
-      Cookies.remove("refresh_token");
+      removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+      removeStoredToken("refresh_token");
     } else {
       console.log(
         "Nettoyage: Suppression du token étudiant pour un enseignant"
@@ -217,7 +244,7 @@ BackendApi.interceptors.request.use(
       }
     }
 
-    const cookieToken = Cookies.get(ACCESS_TOKEN_COOKIE_NAME);
+    const cookieToken = getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
     if (cookieToken) {
       config.headers.Authorization = `Bearer ${cookieToken}`;
     }
@@ -270,7 +297,7 @@ BackendApi.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      const refreshToken = Cookies.get("refresh_token");
+      const refreshToken = getStoredToken("refresh_token");
       if (refreshToken && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
@@ -279,19 +306,18 @@ BackendApi.interceptors.response.use(
             { refresh_token: refreshToken }
           );
           const newToken = newTokenResponse.data.token;
-          Cookies.set(ACCESS_TOKEN_COOKIE_NAME, newToken);
+          setStoredToken(ACCESS_TOKEN_COOKIE_NAME, newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return BackendApi(originalRequest);
         } catch (refreshError) {
-          Cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
-          Cookies.remove("refresh_token");
+          removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+          removeStoredToken("refresh_token");
           window.location.pathname = "/login";
           return Promise.reject(error);
         }
       }
-
-      Cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
-      Cookies.remove("refresh_token");
+      removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+      removeStoredToken("refresh_token");
       window.location.pathname = "/login";
     }
 
@@ -300,3 +326,4 @@ BackendApi.interceptors.response.use(
 );
 
 export default BackendApi;
+export { getStoredToken, setStoredToken, removeStoredToken };
