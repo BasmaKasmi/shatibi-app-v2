@@ -1,4 +1,5 @@
 import { CapacitorConfig } from "@capacitor/cli";
+
 const config: CapacitorConfig = {
   appId: "com.basmakasmi.shatibi",
   appName: "Shatibi",
@@ -10,9 +11,10 @@ const config: CapacitorConfig = {
       "https://base-shatibi.iela.fr",
       "*",
     ],
-    cleartext: true,
+    cleartext: false,
     androidScheme: "https",
     iosScheme: "capacitor",
+    hostname: "localhost",
   },
   plugins: {
     SplashScreen: {
@@ -23,6 +25,10 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true,
     },
+    CapacitorCookies: {
+      enabled: true,
+    },
   },
 };
+
 export default config;

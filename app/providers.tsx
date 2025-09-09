@@ -7,7 +7,7 @@ import { DatesProvider } from "@mantine/dates";
 import { TeacherProvider } from "@/app/TeacherContext";
 import "@mantine/core/styles.css";
 import { DateProvider } from "./DateContext";
-import { UniversDetectionProvider } from "@/hooks/useUniversDetection"; // Importez le nouveau provider
+import { UniversDetectionProvider } from "@/hooks/useUniversDetection";
 import { AuthCheck } from "@/components/AuthCheck";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {

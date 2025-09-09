@@ -9,9 +9,10 @@
 			"https://base-shatibi.iela.fr",
 			"*"
 		],
-		"cleartext": true,
+		"cleartext": false,
 		"androidScheme": "https",
-		"iosScheme": "capacitor"
+		"iosScheme": "capacitor",
+		"hostname": "localhost"
 	},
 	"plugins": {
 		"SplashScreen": {

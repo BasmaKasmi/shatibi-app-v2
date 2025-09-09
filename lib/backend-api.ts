@@ -3,30 +3,44 @@ import Cookies from "js-cookie";
 import { Capacitor } from "@capacitor/core";
 
 const getStoredToken = (key: string): string | null => {
-  if (Capacitor.isNativePlatform()) {
-    return localStorage.getItem(key);
+  try {
+    if (Capacitor.isNativePlatform()) {
+      const token = localStorage.getItem(key);
+      return token;
+    }
+    const token = Cookies.get(key) || null;
+    return token;
+  } catch (error) {
+    return null;
   }
-  return Cookies.get(key) || null;
 };
 
 const setStoredToken = (key: string, value: string): void => {
-  if (Capacitor.isNativePlatform()) {
-    localStorage.setItem(key, value);
-  } else {
-    Cookies.set(key, value);
-  }
+  try {
+    if (Capacitor.isNativePlatform()) {
+      localStorage.setItem(key, value);
+    } else {
+      Cookies.set(key, value);
+    }
+  } catch (error) {}
 };
 
 const removeStoredToken = (key: string): void => {
-  if (Capacitor.isNativePlatform()) {
-    localStorage.removeItem(key);
-  } else {
-    Cookies.remove(key);
-  }
+  try {
+    if (Capacitor.isNativePlatform()) {
+      localStorage.removeItem(key);
+    } else {
+      Cookies.remove(key);
+    }
+  } catch (error) {}
 };
 
 const BackendApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  timeout: 30000,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 export const ACCESS_TOKEN_COOKIE_NAME = "access_token";
@@ -80,13 +94,24 @@ const TEACHER_ONLY_ROUTES = [
 ];
 
 const isStudentRoute = (url: string | undefined): boolean => {
-  return !!url && url.includes("/student/");
+  const result = !!url && url.includes("/student/");
+  return result;
+};
+
+const isTeacherRoute = (url: string | undefined): boolean => {
+  if (!url) return false;
+
+  const result =
+    TEACHER_ONLY_ROUTES.some((route) => url.includes(route)) ||
+    url.includes("/teacher/");
+  return result;
 };
 
 export const checkIfUserIsStudent = (): boolean => {
   if (typeof window !== "undefined") {
     const hasTeacherToken = !!getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
     const hasStudentToken = !!localStorage.getItem("token");
+    const currentPath = window.location.pathname;
 
     if (hasStudentToken && !hasTeacherToken) {
       return true;
@@ -95,74 +120,62 @@ export const checkIfUserIsStudent = (): boolean => {
     if (hasTeacherToken && !hasStudentToken) {
       return false;
     }
-  }
 
-  const currentPath =
-    typeof window !== "undefined" ? window.location.pathname : "";
+    const studentPaths = [
+      "/student-login",
+      "/home-student",
+      "/c-seance-etudiants",
+      "/calendrier-etudiant",
+      "/students-groups",
+      "/homework-list",
+      "/student-evaluation",
+    ];
 
-  const studentPaths = [
-    "/student-login",
-    "/home-student",
-    "/c-seance-etudiants",
-    "/calendrier-etudiant",
-    "/students-groups",
-    "/homework-list",
-    "/student-evaluation",
-  ];
+    const teacherPaths = [
+      "/login",
+      "/groups/",
+      "/emargement/",
+      "/avis-passage/",
+      "/agenda/calendar-page",
+      "/agenda/",
+      "/cahier-seances/",
+      "/evaluations",
+      "/liste-etudiants",
+      "/unmade-attendance",
+    ];
 
-  const teacherPaths = [
-    "/login",
-    "/groups/",
-    "/emargement/",
-    "/avis-passage/",
-    "/agenda/calendar-page",
-    "/agenda/",
-    "/cahier-seances/",
-    "/evaluations",
-    "/liste-etudiants",
-    "/unmade-attendance",
-  ];
+    if (currentPath === "/home" && hasTeacherToken) {
+      return false;
+    }
 
-  if (
-    currentPath === "/home" &&
-    typeof window !== "undefined" &&
-    getStoredToken(ACCESS_TOKEN_COOKIE_NAME)
-  ) {
-    return false;
-  }
+    if (teacherPaths.some((path) => currentPath.includes(path))) {
+      return false;
+    }
 
-  if (teacherPaths.some((path) => currentPath.includes(path))) {
-    return false;
-  }
+    if (studentPaths.some((path) => currentPath.includes(path))) {
+      return true;
+    }
 
-  if (studentPaths.some((path) => currentPath.includes(path))) {
-    return true;
-  }
-
-  if (typeof window !== "undefined") {
-    const userInfoStored = localStorage.getItem("UserInfo");
-    if (userInfoStored) {
-      try {
+    try {
+      const userInfoStored = localStorage.getItem("UserInfo");
+      if (userInfoStored) {
         const userInfo = JSON.parse(userInfoStored);
+
         if (userInfo.role === "teacher") {
           return false;
         }
         if (
           userInfo.role === "student" ||
-          (userInfo.child &&
-            userInfo.child.access === "oui" &&
+          (userInfo.child?.access === "oui" &&
             (!userInfo.adult || userInfo.adult.access !== "oui"))
         ) {
           return true;
         }
-      } catch (e) {
-        console.error("Erreur lors de la lecture de UserInfo", e);
       }
-    }
-  }
+    } catch (e) {}
 
-  if (typeof window !== "undefined") {
-    return !getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+    const result = !hasTeacherToken;
+    return result;
   }
 
   return false;
@@ -171,85 +184,73 @@ export const checkIfUserIsStudent = (): boolean => {
 export const cleanupTokens = (): void => {
   if (typeof window === "undefined") return;
 
-  const currentPath = window.location.pathname;
+  try {
+    const currentPath = window.location.pathname;
+    const hasStudentToken = !!localStorage.getItem("token");
+    const hasTeacherToken = !!getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
 
-  if (
-    localStorage.getItem("token") &&
-    getStoredToken(ACCESS_TOKEN_COOKIE_NAME)
-  ) {
-    if (
-      currentPath.startsWith("/student") ||
-      currentPath.startsWith("/student-") ||
-      currentPath.startsWith("/home-student") ||
-      currentPath.startsWith("/c-seance-etudiants") ||
-      currentPath.startsWith("/calendrier-etudiant") ||
-      currentPath.startsWith("/students-groups") ||
-      currentPath.startsWith("/homework-list")
-    ) {
-      console.log(
-        "Nettoyage: Suppression du token enseignant pour un étudiant"
-      );
-      removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
-      removeStoredToken("refresh_token");
-    } else {
-      console.log(
-        "Nettoyage: Suppression du token étudiant pour un enseignant"
-      );
-      localStorage.removeItem("token");
-      localStorage.removeItem("student_id");
+    if (hasStudentToken && hasTeacherToken) {
+      const studentPaths = [
+        "/student",
+        "/student-",
+        "/home-student",
+        "/c-seance-etudiants",
+        "/calendrier-etudiant",
+        "/students-groups",
+        "/homework-list",
+      ];
+
+      if (studentPaths.some((path) => currentPath.startsWith(path))) {
+        removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+        removeStoredToken("refresh_token");
+      } else {
+        localStorage.removeItem("token");
+        localStorage.removeItem("student_id");
+      }
     }
-  }
+  } catch (error) {}
 };
 
 const getStudentToken = (): string | null => {
-  return typeof window !== "undefined" ? localStorage.getItem("token") : null;
-};
-
-const isTeacherRoute = (url: string | undefined): boolean => {
-  if (!url) return false;
-
-  if (TEACHER_ONLY_ROUTES.some((route) => url.includes(route))) {
-    return true;
-  }
-
-  return url.includes("/teacher/");
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return token;
 };
 
 BackendApi.interceptors.request.use(
   function (config) {
-    cleanupTokens();
+    try {
+      cleanupTokens();
+      const isStudentSpace = checkIfUserIsStudent();
 
-    const isStudentSpace = checkIfUserIsStudent();
+      if (isStudentSpace && isTeacherRoute(config.url)) {
+        return Promise.reject(
+          new Error(`API enseignant non autorisée: ${config.url}`)
+        );
+      }
 
-    if (isStudentSpace && isTeacherRoute(config.url)) {
-      console.log(
-        `Requête API enseignant bloquée dans l'espace étudiant: ${config.url}`
-      );
-      return Promise.reject(
-        new Error(
-          `API enseignant non autorisée dans l'espace étudiant: ${config.url}`
-        )
-      );
-    }
-
-    if (STUDENT_TOKEN_BODY_ROUTES.some((route) => config.url === route)) {
-      return config;
-    }
-
-    if (isStudentRoute(config.url)) {
-      const localToken = getStudentToken();
-      if (localToken) {
-        config.headers.Authorization = `Bearer ${localToken}`;
+      if (STUDENT_TOKEN_BODY_ROUTES.some((route) => config.url === route)) {
         return config;
       }
-    }
 
-    const cookieToken = getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
-    if (cookieToken) {
-      config.headers.Authorization = `Bearer ${cookieToken}`;
-    }
+      if (isStudentRoute(config.url)) {
+        const localToken = getStudentToken();
+        if (localToken) {
+          config.headers.Authorization = `Bearer ${localToken}`;
+        } else {
+        }
+      } else {
+        const cookieToken = getStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+        if (cookieToken) {
+          config.headers.Authorization = `Bearer ${cookieToken}`;
+        } else {
+        }
+      }
 
-    return config;
+      return config;
+    } catch (error) {
+      return Promise.reject(error);
+    }
   },
   function (error) {
     return Promise.reject(error);
@@ -261,11 +262,7 @@ BackendApi.interceptors.response.use(
     return response;
   },
   async (error) => {
-    if (
-      error.message &&
-      error.message.includes("API enseignant non autorisée")
-    ) {
-      console.log("Erreur intentionnelle:", error.message);
+    if (error.message?.includes("API enseignant non autorisée")) {
       return Promise.reject(error);
     }
 
@@ -281,49 +278,82 @@ BackendApi.interceptors.response.use(
         localStorage.removeItem("student_id");
         localStorage.removeItem("token");
         localStorage.removeItem("firstname");
-        window.location.pathname = "/student-login";
+
+        if (typeof window !== "undefined") {
+          setTimeout(() => {
+            window.location.pathname = "/student-login";
+          }, 100);
+        }
         return Promise.reject(error);
       }
 
-      if (
-        window.location.pathname.includes("/student") ||
-        window.location.pathname.includes("student-") ||
-        window.location.pathname === "/home-student"
-      ) {
-        console.log(
-          "Erreur API enseignant ignorée dans l'espace étudiant:",
-          error.config.url
-        );
-        return Promise.reject(error);
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+        const studentSpacePaths = ["/student", "student-", "/home-student"];
+
+        if (studentSpacePaths.some((path) => currentPath.includes(path))) {
+          return Promise.reject(error);
+        }
       }
 
       const refreshToken = getStoredToken("refresh_token");
       if (refreshToken && !originalRequest._retry) {
         originalRequest._retry = true;
+
         try {
-          const newTokenResponse = await axios.post(
+          const refreshResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh-token`,
-            { refresh_token: refreshToken }
+            { refresh_token: refreshToken },
+            { timeout: 15000 }
           );
-          const newToken = newTokenResponse.data.token;
+
+          const newToken = refreshResponse.data.token;
           setStoredToken(ACCESS_TOKEN_COOKIE_NAME, newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
           return BackendApi(originalRequest);
         } catch (refreshError) {
           removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
           removeStoredToken("refresh_token");
-          window.location.pathname = "/login";
+
+          if (typeof window !== "undefined") {
+            setTimeout(() => {
+              window.location.pathname = "/login";
+            }, 100);
+          }
           return Promise.reject(error);
         }
+      } else {
+        removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
+        removeStoredToken("refresh_token");
+
+        if (typeof window !== "undefined") {
+          setTimeout(() => {
+            window.location.pathname = "/login";
+          }, 100);
+        }
       }
-      removeStoredToken(ACCESS_TOKEN_COOKIE_NAME);
-      removeStoredToken("refresh_token");
-      window.location.pathname = "/login";
     }
 
     return Promise.reject(error);
   }
 );
+
+export const getIOSDebugLogs = (): any[] => {
+  try {
+    return JSON.parse(localStorage.getItem("ios_debug_logs") || "[]");
+  } catch {
+    return [];
+  }
+};
+
+export const clearIOSDebugLogs = (): void => {
+  try {
+    localStorage.removeItem("ios_debug_logs");
+  } catch (e) {
+    console.warn("Impossible de vider les logs:", e);
+  }
+};
 
 export default BackendApi;
 export { getStoredToken, setStoredToken, removeStoredToken };
